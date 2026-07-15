@@ -362,7 +362,7 @@ Approach the butler to ask him again where Jothro is supposed to sit
 
 (set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="20" name="Upload new seating plan" tags="" position="2225,675" size="100,100">Dialogue with the butler while uploading the new seating plan.
 
-(if: $seatingChanged and $distractionPrepared is true)
+(if: $seatingChanged is true and $distractionPrepared is true)
 [
 A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
 ]
@@ -370,13 +370,47 @@ A bell rings and the top students are called to join the Admiral for the [[dinne
 (else:)
 [
 [[Go back to Luen|Get rid of the guards]]
-]</tw-passagedata><tw-passagedata pid="21" name="Dinner starts" tags="" position="2775,425" size="100,100">DINNER STARTS</tw-passagedata><tw-passagedata pid="22" name="Hacking minigame?" tags="" position="2075,200" size="100,100">HACKING MINIGAME?
+]</tw-passagedata><tw-passagedata pid="21" name="Dinner starts" tags="" position="2775,425" size="100,100">Enter the dinner chamber; not many people there so far
+
+(if: $camerasHacked is true)
+[
+Check that the cameras are truely turned off
+
+One seat next to the Admiral&#39;s seat is still open -&gt; try and take it
+The butler notices what Jothro is trying and reminds him of where he&#39;s supposed to sit
+[[Take the open seat next to the Admiral]]
+[[Take your assigned seat]]
+]
+
+(else-if: $seatingChanged is true)
+[
+Jothro goes to take his seat next to the Admiral, but another student stops him; the seat is supposed to be his since he graduated with the best point average
+
+	[
+|CH2&gt;[|A&gt;[&quot;There was a mistake mistaken.&quot;]
+|B&gt;[&quot;What are you on about?&quot;]
+|C&gt;[&quot;I&#39;ve talked with the butler&quot;]]
+    ]
+]
+
+	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: Oh yeah there was a mistake in the seating plan, sorry. You are now sitting threre at the end.&quot;
+]
+	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: What are you on about? The Principalis is the last one to decide who sits where. I guess he likes me better than you.&quot;
+]
+	(click:?C)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: I literarly just talked with the butler. I&#39;ve been assigned this seat.&quot;
+]</tw-passagedata><tw-passagedata pid="22" name="Hacking minigame?" tags="" position="2075,200" size="100,100">HACKING MINIGAME?
 
 [[Go inside|Inside the security room]]</tw-passagedata><tw-passagedata pid="23" name="Inside the security room" tags="" position="2225,200" size="100,100">Sabotage the cameras
 Gain remote access to the cameras
 
 [[Sneak out|Sabotage completed]]
-(set: $camerasHacked to true)</tw-passagedata><tw-passagedata pid="24" name="Sabotage completed" tags="" position="2375,200" size="100,100">(if: $camerasHacked and $distractionPrepared is true)
+(set: $camerasHacked to true)</tw-passagedata><tw-passagedata pid="24" name="Sabotage completed" tags="" position="2375,200" size="100,100">(if: $camerasHacked is true and $distractionPrepared is true)
 [
 A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
 ]
@@ -432,7 +466,7 @@ It&#39;s gonna take a little bit of persuading, but eventually he will crack
 ]
 
 [[Continue|End of card game]]
-(set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="29" name="End of card game" tags="" position="2575,425" size="100,100">(if: $camerasHacked or $seatingChanged is false)
+(set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="29" name="End of card game" tags="" position="2575,425" size="100,100">(if: $camerasHacked is false and $seatingChanged is false)
 [
 [[Go disable the cameras|Sabotage the cameras]]
 [[Seek out the butler|Change the seating order]]
@@ -456,7 +490,27 @@ text
 (click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
 (click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
 
-[[Continue walking|Luen convo cont&#39;d]]</tw-passagedata></tw-storydata>
+[[Continue walking|Luen convo cont&#39;d]]</tw-passagedata><tw-passagedata pid="31" name="Await the Admiral&#39;s arrival" tags="" position="3175,425" size="100,100"></tw-passagedata><tw-passagedata pid="32" name="Move" tags="" position="2975,300" size="100,100">[[Await the Admiral&#39;s arrival]]</tw-passagedata><tw-passagedata pid="33" name="Take the open seat next to the Admiral" tags="" position="2975,525" size="100,100">Jothro starts sitting down when the butler puts an arm on his shoulder.
+
+&quot;Butler: And what are you trying to do, Graduate?&quot;
+
+	[
+|CH1&gt;[|A&gt;[&quot;Sorry, this is not my...?&quot;]
+|B&gt;[&quot;I thought...&quot;]]
+	]
+]
+
+	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Butler: You are seated at the other end.&quot;
+[[Move]]
+]
+	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Butler: You are seated at the other end.&quot;
+[[Move]]
+]</tw-passagedata><tw-passagedata pid="34" name="Take your assigned seat" tags="" position="2975,650" size="100,100">Jothro takes his seat and looks around as more students start pouring in.
+[[Await the Admiral&#39;s arrival]]</tw-passagedata></tw-storydata>
 <script title="Twine engine code" data-main="harlowe">(function(){"use strict";
 var require,define;!function(){var e={},r={};require=function(i){var n=e[i];return n&&(r[i]=n[1].apply(void 0,n[0].map(require)),e[i]=void 0),r[i]},(define=function(r,i,n){if("function"==typeof r)return r();e[r]=[i,n]}).amd=!0}();/*!
  * https://github.com/paulmillr/es6-shim
