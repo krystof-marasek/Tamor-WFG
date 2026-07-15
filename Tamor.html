@@ -9,7 +9,202 @@
 </head>
 <body>
 <tw-story><noscript><tw-noscript>JavaScript needs to be enabled to play Tamor.</tw-noscript></noscript></tw-story>
-<tw-storydata name="Tamor" startnode="1" creator="Twine" creator-version="2.12.0" format="Harlowe" format-version="3.3.9" ifid="A4204195-644A-4ACB-9284-8874DBF6BC3E" options="" tags="" zoom="0.6" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="In Front of Grand Hall" tags="" position="175,50" size="100,100">Jothro looks at the veil of stars above him and his gaze slowly comes down to the Grand Hall that stands imposingly in front of him. Its size reminds him of the burden that now lies on his shoulders.
+<tw-storydata name="Tamor" startnode="1" creator="Twine" creator-version="2.12.0" format="Harlowe" format-version="3.3.9" ifid="A4204195-644A-4ACB-9284-8874DBF6BC3E" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* 
+	Twine CSS Template
+	
+	Simple CSS Template to help Twine authors change 
+		the default appearance
+		
+	Most current version, and license information at:
+	https://github.com/danieltalsky/twine-css-template
+	
+	Special thanks to furkle's Twine 2 Harlowe CSS Tutorial
+	no longer up on the web but helped a lot with the basics.
+	
+	- Version:  1.0
+	- Author:   Daniel Talsky <daniel@danieltalsky.com>
+
+	
+	COLORS
+
+	The default colors I picked are based on the Solarized Dark theme, 
+	optimized for readability and most often used in computer programming.
+	Change them to make your game have whatever mood you want, just make
+	sure it's readable!
+
+	- background  				#002b36
+	- sidebar background   		#073642
+	
+	- main text color 			#839496
+	- main sidebar text color   #93a1a1
+
+	FONTS
+	
+	You can use a traditional HTML font stack, but having access to
+	unique fonts keeps your game looking unique.  I picked 
+	PT Sans Caption, but you can pick any combination of google fonts
+	and they will generate this import line for you.
+	
+	Google Fonts:
+	https://fonts.google.com/
+*/
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+
+tw-story {
+    background-image: url("https://assets.website-files.com/61c65ec6a561fd221a099b0e/61cb8f6acaa266900eac392f_stars.png");
+    background-position: 0 0;
+    background-size: 10%;
+	color: #839496;
+	font-family: "Exo 2", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+	/* This makes the font size for normal letters just a little bit bigger than default */
+	font-size: 1.25em;
+}
+
+/* These are the default options for the each passage area */
+tw-passage {
+	/* 
+		This lets the story take up most of its width up to a maximum readable width 
+		an `em` is about the width of one of your letters.  max-width lets the size
+		get wider and wider with the size of the window but only to a sane point
+		
+		It's ok to experiment with making this smaller or larger
+	*/
+    max-width: 55em;
+	/* This centers the main story column in the window */
+    margin: 0 auto 0 auto;
+}
+
+/* The sidebar with scoring and the back button */
+tw-sidebar { 
+	background: #073642;
+	color: #93a1a1;
+	/* 
+		Gives the sidebar rounded corners.  Remove for no corners or make the number
+		higher for more rounded colors.
+		
+	*/
+	border-radius: 10px;
+
+	/* Uncomment to hide the sidebar completely */
+	/* display: none; */ 
+}
+
+/*
+  BASIC LINK STYLES
+  
+  This covers various different kinds of links in Harlowe
+*/
+.enchantment-link, tw-link, a {
+	color: #cb4b16; 
+	font-weight: bold; 
+	/* Adds a glow to links.  You can make it a seperate color from the text 
+	   The numbers mean, in order: 
+	   - How far to the right of the letter (0 means radiating from the letter)
+	   - How far below the letter
+	   - How much blur does the glow/shadow have
+	   - What color is the shadow
+	*/
+	text-shadow: 0 0 5px #cb4b16;
+}
+/* Links that have already been visited */
+.enchantment-link:visited, tw-link:visited, .enchantment-link.visited, tw-link.visited, a:visited {
+	color: #268bd2; 
+	font-weight: bold; 
+	text-shadow: 0 0 5px #268bd2;
+}
+/* Links when the mouse is over them */
+.enchantment-link:hover, tw-link:hover, a:hover {
+	color: #2aa198; 
+	font-weight: bold; 
+	text-shadow: 0 0 5px #2aa198;
+}
+
+
+/*
+	EFFECTS
+
+	The pulse-in effect is good for text that will appear based on a user
+	action.  In Twine2, text will just blink into being and the user might
+	not notice.  If you wrap your text in:
+	<span class="pulse-in">Text that gets shown.</span>
+	
+	It will appear with a bright colored pulse that makes it clear it just
+	appeared.
+*/
+@keyframes pulsein {
+  from { color: #00fbf7; text-shadow: 0 0 1em #00fbf7; }
+  to { color: #ADC3D8; text-shadow: 0 0; }
+}
+.pulse-in {
+    color: #ADC3D8;
+    font-size: 1.1em;
+    animation: pulsein 1.2s linear 3;
+}
+span.pulse-in {
+  font-size: inherit;
+}
+
+/* IMAGE STYLES */
+
+/* styles for all images by default */
+img {
+	/* for example */
+	/* border: 1px solid black; */
+}
+/* 
+   images with <img class="full-width"> will stretch 
+   to the full width of the story 
+*/
+img.full-width {
+	display:block; margin-right:auto; margin-left:auto; 
+	width: 100%;
+}
+
+
+
+
+
+/*
+	TABLET-SPECIFIC RULES / SMALL WIDTH BROWSERS
+*/
+@media only screen and (min-width: 401px) and (max-width: 960px) {
+
+  tw-story {
+	  font-size: 3em;
+	  width: 100%;
+	  max-width: 95%;
+	  margin: 0 auto 0 auto;
+	  padding: 20% 10%;
+  }
+
+  tw-passage {
+	  width: 100%;
+  }  
+
+}	
+
+/*
+	MOBILE-SPECIFIC RULES
+	
+	You often want to make fonts much larger.
+*/
+@media only screen and (max-device-width: 480px) {
+
+  tw-story {
+	  font-size: 3.2em;
+	  width: 100%;
+	  max-width: 95%;
+	  margin: 0 auto 0 auto;
+	  padding: 20% 5%;
+  }
+
+  tw-passage {
+	  width: 100%;
+  }  
+  
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-tag name="startup" color="yellow"></tw-tag><tw-passagedata pid="1" name="In Front of Grand Hall" tags="" position="175,50" size="100,100">Jothro looks at the veil of stars above him and his gaze slowly comes down to the Grand Hall that stands imposingly in front of him. Its size reminds him of the burden that now lies on his shoulders.
 
 He is just few steps from the entrance but cannot seem to persuade himself to complete the ascent to the butler that stands in front of the doors.
 
@@ -39,13 +234,15 @@ Jothro repeats his goal in his head - Time to mingle and just appear normal; onc
 
 The Admiral appears to be happy and charming; Everyone around her seems to be joyful
 
-[[Eavesdrop on their conversation|Admiral at the reception]]</tw-passagedata><tw-passagedata pid="6" name="Go look for some of your friends" tags="" position="700,350" size="100,100">Some of Jothor&#39;s classmates are standing in one of the corners, laughing and with plentiful drinks in their hands
+[[Eavesdrop on their conversation|Admiral at the reception]]</tw-passagedata><tw-passagedata pid="6" name="Go look for some of your friends" tags="" position="700,350" size="100,100">Some of Jothro&#39;s classmates are standing in one of the corners, laughing and with plentiful drinks in their hands
 
-[[Go and join them|Jothor&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="7" name="Startinit" tags="" position="175,175" size="100,100">(set: $drunkenness to 0)
+[[Go and join them|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="7" name="Startup" tags="startup" position="175,175" size="100,100">(set: $drunkenness to 0)
 (set: $receptionAdmiral to false)
-(set: $receptionFriends to false)</tw-passagedata><tw-passagedata pid="8" name="Observe the hall" tags="" position="850,50" size="100,100">(set: $drunkenness to $drunkenness + 1)
+(set: $receptionFriends to false)
 
-Observe the hall and note that you can see both the Admiral and your friends
+(set: $seatingChanged to false)
+(set: $camerasHacked to false)
+(set: $distractionPrepared to false)</tw-passagedata><tw-passagedata pid="8" name="Observe the hall" tags="" position="850,50" size="100,100">Observe the hall and note that you can see both the Admiral and your friends
 
 She is speaking with some teachers and students
 The Admiral appears to be happy and charming; Everyone around her seems to be joyful
@@ -53,30 +250,55 @@ The Admiral appears to be happy and charming; Everyone around her seems to be jo
 Some of Jothor&#39;s classmates are standing in one of the corners, laughing and with plentiful drinks in their hands
 
 [[Go and eavesdrop on the Admiral|Admiral at the reception]]
-[[Go and join Jothor&#39;s frinds|Jothor&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="9" name="Admiral at the reception" tags="" position="850,200" size="100,100">(set: $receptionAdmiral to true)
+[[Go and join Jothro&#39;s friends|Jothro&#39;s friends at the reception]]
 
-She is not the person Jothro expected; in Jothro&#39;s mind she is supposed to be stern, stoic, and a ruthless monster
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="9" name="Admiral at the reception" tags="" position="850,200" size="100,100">She is not the person Jothro expected; in Jothro&#39;s mind she is supposed to be stern, stoic, and a ruthless monster
 
 Several Technopaths are protecting her; no doubt they&#39;ll be in the dinner chamber as well
 
 Jothro&#39;s friends walk by and urge him to join for a couple of drinks
 
-[[Join them|Luen arrives]]</tw-passagedata><tw-passagedata pid="10" name="Jothor&#39;s friends at the reception" tags="" position="975,350" size="100,100">(set: $receptionFriends to true)
+[[Join them|Luen arrives]]
 
-Have a quick chat; They recap what happened during the past two years
+(set: $receptionAdmiral to true)</tw-passagedata><tw-passagedata pid="10" name="Jothro&#39;s friends at the reception" tags="" position="975,350" size="100,100">Have a quick chat; They recap what happened during the past two years
 
-They offer Jothro a drink
+Mav, a good friend of Jothro, offers him a drink
 
-[[Accept|Accept drink from friends]]
-[[Refuse|Refuse drink from friends]]</tw-passagedata><tw-passagedata pid="11" name="Luen arrives" tags="" position="1475,200" size="100,100"></tw-passagedata><tw-passagedata pid="12" name="Accept drink from friends" tags="" position="1125,350" size="100,100">(set: $drunkenness to $drunkenness + 1)
+[[Accept|Accept first drink from Mav]]
+[[Refuse|Refuse first drink from Mav]]
 
-Describe the drink Jothro is about to drink
+(set: $receptionFriends to true)</tw-passagedata><tw-passagedata pid="11" name="Luen arrives" tags="" position="1475,200" size="100,100">(if: $receptionAdmiral is true)
+[
+Luen intercepts Jothro out of nowhere
+She&#39;s gonna say that the other classmates are going to play cards, but she wants to spend some time with you before joining them.
 
-[[Continue|Continue talking with friends]]</tw-passagedata><tw-passagedata pid="13" name="Refuse drink from friends" tags="" position="1125,475" size="100,100">(if: $drunkenness = 1)
-Jothro: &quot;No thanks, I already had one.&quot;
+[[Start walking with Luen]]
+]
+
+(else-if: $receptionFriends is true)
+[
+Luen intercepts Jothro out of nowhere
+She jokingly takes Jothro away from others so she can properly talk with him
+
+[[Start walking with Luen]]
+]
 
 (else:)
+[
+ERROR
+]</tw-passagedata><tw-passagedata pid="12" name="Accept first drink from Mav" tags="" position="1125,350" size="100,100">Describe the drink Jothro is about to drink
+
+[[Continue|Continue talking with friends]]
+
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="13" name="Refuse first drink from Mav" tags="" position="1125,475" size="100,100">(if: $drunkenness is 1)
+[
+Jothro: &quot;No thanks, I already had one.&quot;
+]
+
+(else:)
+[
 Jothro: &quot;Not really in the mood for drinking today.&quot;
+]
 
 [[Continue|Continue talking with friends]]</tw-passagedata><tw-passagedata pid="14" name="Continue talking with friends" tags="" position="1275,350" size="100,100">Conversation continues
 
@@ -86,7 +308,155 @@ Jothro spots the Admiral walking by, laughing loudly
 She is not the person Jothro expected; in Jothro&#39;s mind she is supposed to be stern, stoic, and a ruthless monster
 Several Technopaths are protecting her; no doubt they&#39;ll be in the dinner chamber as well
 
-[[Eavesdrop for a bit|Luen arrives]]</tw-passagedata></tw-storydata>
+[[Eavesdrop for a bit|Luen arrives]]</tw-passagedata><tw-passagedata pid="15" name="Luen convo cont&#39;d" tags="" position="1775,200" size="100,100">Dialogue with Luen |option&gt;[clicking on the option]
+
+(click:?option)
+[
+text
+
+[|CH1&gt;[|A&gt;[&quot;choice A&quot;]
+|B&gt;[&quot;choice B&quot;]
+|C&gt;[&quot;choice C&quot;]]]
+]
+
+(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+
+[[Infiltrate the security room|Sabotage the cameras]]
+[[Join her for a few rounds of cards|Get rid of the guards]]
+[[Seek out the butler|Change the seating order]]</tw-passagedata><tw-passagedata pid="16" name="Change the seating order" tags="" position="1925,675" size="100,100">Jothro exuses himself and says he has to take care of something first, but he&#39;ll join her right after
+
+The butler is talking with one of the kitchen&#39;s staff
+
+Jothro accidentely bumps into the butler to swipe access to his datapad
+
+[[Swipe|Swipe the butler&#39;s datapad]]</tw-passagedata><tw-passagedata pid="17" name="Get rid of the guards" tags="" position="1925,425" size="100,100">(if: $camerasHacked or $seatingChanged is true)
+[
+Some games have alredy passed
+Luen recaps what Jothro missed out on (e.g., a student beat a teacher)
+]
+
+(else:)
+[
+Observe the first game being played
+A student beats a teacher
+]
+
+Mav offers Jothro a drink
+
+[[Accept|Accepted second drink from Mav]]
+[[Refures|Refused second drink from Mav]]</tw-passagedata><tw-passagedata pid="18" name="Sabotage the cameras" tags="" position="1925,200" size="100,100">Jothro exuses himself and says he has to take care of something first, but he&#39;ll join her right after
+
+Observe for a bit to see if anyone is in
+
+One guard leaves and Jothro cannot see anyone else inside
+
+[[Hack-in|Hacking minigame?]]</tw-passagedata><tw-passagedata pid="19" name="Swipe the butler&#39;s datapad" tags="" position="2075,675" size="100,100">Look through the seating plan
+
+SMALL MINIGAME to change the seating plan?
+
+Approach the butler to ask him again where Jothro is supposed to sit
+
+[[Approach him|Upload new seating plan]]
+
+(set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="20" name="Upload new seating plan" tags="" position="2225,675" size="100,100">Dialogue with the butler while uploading the new seating plan.
+
+(if: $seatingChanged and $distractionPrepared is true)
+[
+A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
+]
+
+(else:)
+[
+[[Go back to Luen|Get rid of the guards]]
+]</tw-passagedata><tw-passagedata pid="21" name="Dinner starts" tags="" position="2775,425" size="100,100">DINNER STARTS</tw-passagedata><tw-passagedata pid="22" name="Hacking minigame?" tags="" position="2075,200" size="100,100">HACKING MINIGAME?
+
+[[Go inside|Inside the security room]]</tw-passagedata><tw-passagedata pid="23" name="Inside the security room" tags="" position="2225,200" size="100,100">Sabotage the cameras
+Gain remote access to the cameras
+
+[[Sneak out|Sabotage completed]]
+(set: $camerasHacked to true)</tw-passagedata><tw-passagedata pid="24" name="Sabotage completed" tags="" position="2375,200" size="100,100">(if: $camerasHacked and $distractionPrepared is true)
+[
+A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
+]
+
+(else:)
+[
+[[Go back to Luen|Get rid of the guards]]
+]</tw-passagedata><tw-passagedata pid="25" name="Accepted second drink from Mav" tags="" position="2100,350" size="100,100">Describe the drink Jothro is about to drink
+
+(if: $drunkenness is 2)
+[
+The effects of this drink will be really noticable.
+]
+
+(else:)
+[
+Jothro will get midly affected.
+]
+
+[[Start playing the card game]]
+
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="26" name="Refused second drink from Mav" tags="" position="2100,500" size="100,100">(if: $drunkenness is 2)
+[
+Jothro: &quot;No thanks, I think I had enough for tonight..&quot;
+]
+
+(else-if: $drunkenness is 1)
+[
+Jothro: &quot;No thanks, I already had one tonight.&quot;
+]
+
+(else:)
+[
+Jothro: &quot;Not really in the mood for drinking today.&quot;
+]
+
+[[Start playing the card game]]</tw-passagedata><tw-passagedata pid="27" name="Start playing the card game" tags="" position="2275,425" size="100,100">A few games pass
+
+Luen is talking with someone else
+
+One of Jothro&#39;s friends is really drunk now
+
+[[Approach him and ask for help|Prepare distraction]]</tw-passagedata><tw-passagedata pid="28" name="Prepare distraction" tags="" position="2425,425" size="100,100">Ask one of your friends at the table to start a fight in the Grand Hall during the dinner; appeal on him to trust you
+
+(if: $drunkenness is &gt;=2)
+[
+Because he&#39;s drunk, it&#39;s gonna be really easy to persuade him
+]
+
+(else:)
+[
+It&#39;s gonna take a little bit of persuading, but eventually he will crack
+]
+
+[[Continue|End of card game]]
+(set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="29" name="End of card game" tags="" position="2575,425" size="100,100">(if: $camerasHacked or $seatingChanged is false)
+[
+[[Go disable the cameras|Sabotage the cameras]]
+[[Seek out the butler|Change the seating order]]
+]
+
+(else:)
+[
+A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
+]</tw-passagedata><tw-passagedata pid="30" name="Start walking with Luen" tags="" position="1625,200" size="100,100">Dialogue with Luen |option&gt;[clicking on the option]
+
+(click:?option)
+[
+text
+
+[|CH1&gt;[|A&gt;[&quot;choice A&quot;]
+|B&gt;[&quot;choice B&quot;]
+|C&gt;[&quot;choice C&quot;]]]
+]
+
+(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+
+[[Continue walking|Luen convo cont&#39;d]]</tw-passagedata></tw-storydata>
 <script title="Twine engine code" data-main="harlowe">(function(){"use strict";
 var require,define;!function(){var e={},r={};require=function(i){var n=e[i];return n&&(r[i]=n[1].apply(void 0,n[0].map(require)),e[i]=void 0),r[i]},(define=function(r,i,n){if("function"==typeof r)return r();e[r]=[i,n]}).amd=!0}();/*!
  * https://github.com/paulmillr/es6-shim
