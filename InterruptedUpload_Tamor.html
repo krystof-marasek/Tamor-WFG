@@ -1,0 +1,83 @@
+{
+<div class="terminal-box">
+  <!-- The text the player clicks -->
+  <div id="start-hack" class="terminal-command">
+    &gt; UPLOAD SWIPE BACK TO ORIGIN.
+  </div>
+
+  <!-- The loading animation line -->
+  <div id="loading-line" class="terminal-loading">
+    UPLOADING<span id="dots"></span> <span id="percent">0</span>%
+  </div>
+
+  <!-- The text that appears at 70% -->
+  <div id="final-text" class="terminal-result">
+    ERROR: UPLOAD TRACKING DETECTED.<br>
+    UPLOAD PAUSED<span class="cursor-blink">_</span>
+  </div>
+</div>
+
+<!-- NEW: The hidden link that tells Twine where to go -->
+<span id="hidden-redirect-link" style="display:none;">
+  [[Technopath interrupts]]
+</span>
+
+<!-- SCRIPT -->
+<script>
+  const clickText = document.getElementById('start-hack');
+  const loadingLine = document.getElementById('loading-line');
+  const percentText = document.getElementById('percent');
+  const dotsText = document.getElementById('dots');
+  const finalText = document.getElementById('final-text');
+
+  let pct = 0;
+  let dotCount = 0;
+  let hasStarted = false;
+
+  clickText.addEventListener('click', function() {
+    // Prevent clicking multiple times
+    if (hasStarted) return;
+    hasStarted = true;
+
+    // Show the loading line, make the clickable text look inactive
+    loadingLine.style.display = 'block';
+    clickText.style.color = '#00cccc';
+    clickText.style.textShadow = 'none';
+    clickText.style.cursor = 'default';
+    clickText.style.pointerEvents = 'none';
+
+    // The timer loop that increases the percentage
+    let hackInterval = setInterval(function() {
+      // Increase percentage by a random number between 1 and 4 so it feels "real"
+      pct += Math.floor(Math.random() * 4) + 1;
+      
+      // Animate the dots (., .., ...)
+      dotCount = (dotCount + 1) % 4; 
+      dotsText.innerHTML = '.'.repeat(dotCount);
+
+      // Check if we hit our 70% threshold
+      if (pct >= 70) {
+        pct = 70;
+        clearInterval(hackInterval); // Stop the loop
+        
+        // Wait a tiny fraction of a second, then show the error
+        setTimeout(() => {
+          loadingLine.style.color = '#ff4444'; // Turn the 70% line red
+          finalText.style.display = 'block';   // Reveal the final text
+          
+          // NEW: Wait 2.5 seconds (2500ms) after the error appears, then jump to the next passage
+          setTimeout(() => {
+            let link = document.querySelector('#hidden-redirect-link tw-link');
+            if (link) link.click();
+          }, 3000); 
+
+        }, 400);
+      }
+
+      // Update the HTML with the current number
+      percentText.innerHTML = pct;
+
+    }, 150); // Runs every 150 milliseconds
+  });
+</script>
+}

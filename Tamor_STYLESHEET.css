@@ -195,17 +195,82 @@ img.full-width {
   
 }
 
-/*CHANGING SEATS MINIGAME*/
+/*SWIPING*/
 
-/* 1. Global Terminal Setup */
-  .seating-container {
+  .terminal-swipe-box {
+    width: 400px;
+    height: 60px;
+    background-color: #000; /* Deep black */
+    border: 2px solid #00cccc; /* Dimmer phosphor cyan */
+    border-radius: 2px; /* Sharp retro corners */
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+    
+    /* Terminal Font & Flicker */
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    animation: crtFlicker 0.15s infinite;
+  }
+  
+  .terminal-swipe-box:active {
+    cursor: grabbing;
+  }
+
+  .terminal-swipe-fill {
+    width: 0px;
+    height: 100%;
+    background-color: rgba(0, 255, 255, 0.4); /* Transparent bright cyan */
+    border-right: 2px solid #ffffff; /* "Scanning laser" edge */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Glow bleed */
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+  }
+
+  .terminal-swipe-text {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ffff; /* Bright cyan */
+    font-weight: bold;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+    text-shadow: 0 0 5px #00ffff; /* Text glow */
+  }
+
+  /* Utility: Hide the Twine link completely */
+  .hidden-link {
+    display: none;
+  }
+
+  /* CRT Flicker Animation */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+
+/*CHANGING SEATS MINIGAME*/
+.seating-container {
     display: grid;
     grid-template-columns: repeat(6, 110px); /* Slightly wider for the border glow */
     gap: 20px;
     justify-content: center;
     position: relative;
     padding: 30px;
-    background-color: #000; /* Deep black background */
+    background-color: #000;
+    border: 2px solid #00cccc;
     touch-action: none;
     user-select: none;
     
@@ -217,7 +282,6 @@ img.full-width {
     animation: crtFlicker 0.15s infinite;
   }
 
-  /* 2. Base Seat Style (Empty schematic entry) */
   .seat {
     width: 100px;
     height: 100px;
@@ -238,7 +302,6 @@ img.full-width {
     box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
   }
 
-  /* 3. Terminal Table Style */
   .table-center {
     grid-column: span 5;
     background: repeating-linear-gradient(
@@ -257,7 +320,6 @@ img.full-width {
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
   }
 
-  /* 4. Occupied/Filled Seats (Admiral and Player) */
   #admiral-seat, #player-seat {
     background-color: rgba(0, 204, 204, 0.2); /* Faint blue fill */
     border: 2px solid #00ffff; /* Brighter active outline */
@@ -283,25 +345,30 @@ img.full-width {
     background-color: rgba(0, 204, 204, 0.5); /* Brighter when grabbed */
   }
 
-  /* 5. The Target Seat (Dufry) - Pulsing red replaced by pulsing blue for monochrome theme */
   #target-seat {
     color: #00ffff;
     background-color: transparent;
     animation: targetPulse 1.5s infinite; /* Attracts attention */
   }
 
-  /* 6. Spacers */
   .empty-space {
     visibility: hidden; 
   }
 
-  /* 7. Hidden Link style (terminal color) */
+  /* NEW: Terminal Output Style */
+  #hidden-swap-link {
+    display: none; /* Hidden until JS triggers it */
+    grid-column: 1 / -1; /* Forces it to span completely across all 6 columns */
+    padding-top: 15px;
+    color: #00ff33; /* Glowing terminal green */
+    text-shadow: 0 0 5px #00ff33;
+	font-weight: bold;
+  }
+
   #hidden-swap-link tw-link {
     color: #00ffff !important;
     font-family: 'Courier New', monospace;
   }
-
-  /* --- ANIMATIONS --- */
 
   /* Subtitle screen flicker for CRT feel */
   @keyframes crtFlicker {
@@ -324,4 +391,60 @@ img.full-width {
       border: 2px solid #00cccc;
       box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
     }
+  }
+
+/*UPLOADING FUNCTION*/
+  .terminal-box {
+    background-color: #000;
+    border: 2px solid #00cccc;
+    border-radius: 2px;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+    animation: crtFlicker 0.15s infinite;
+    user-select: none;
+    line-height: 1.5;
+  }
+
+  .terminal-command {
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ffff;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  .terminal-command:hover {
+    background-color: rgba(0, 255, 255, 0.2);
+  }
+
+  .terminal-loading {
+    display: none; 
+    color: #00cccc;
+    margin-top: 15px;
+  }
+
+  .terminal-success {
+    display: none; /* Hidden until 100% */
+    margin-top: 15px;
+    color: #00ff33; /* Glowing terminal green */
+    text-shadow: 0 0 5px #00ff33;
+    font-weight: bold;
+  }
+  
+  /* Blinking cursor effect */
+  .cursor-blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Animations */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }

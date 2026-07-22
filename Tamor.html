@@ -206,17 +206,82 @@ img.full-width {
   
 }
 
-/*CHANGING SEATS MINIGAME*/
+/*SWIPING*/
 
-/* 1. Global Terminal Setup */
-  .seating-container {
+  .terminal-swipe-box {
+    width: 400px;
+    height: 60px;
+    background-color: #000; /* Deep black */
+    border: 2px solid #00cccc; /* Dimmer phosphor cyan */
+    border-radius: 2px; /* Sharp retro corners */
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+    
+    /* Terminal Font & Flicker */
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    animation: crtFlicker 0.15s infinite;
+  }
+  
+  .terminal-swipe-box:active {
+    cursor: grabbing;
+  }
+
+  .terminal-swipe-fill {
+    width: 0px;
+    height: 100%;
+    background-color: rgba(0, 255, 255, 0.4); /* Transparent bright cyan */
+    border-right: 2px solid #ffffff; /* "Scanning laser" edge */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Glow bleed */
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+  }
+
+  .terminal-swipe-text {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00ffff; /* Bright cyan */
+    font-weight: bold;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+    text-shadow: 0 0 5px #00ffff; /* Text glow */
+  }
+
+  /* Utility: Hide the Twine link completely */
+  .hidden-link {
+    display: none;
+  }
+
+  /* CRT Flicker Animation */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+
+/*CHANGING SEATS MINIGAME*/
+.seating-container {
     display: grid;
     grid-template-columns: repeat(6, 110px); /* Slightly wider for the border glow */
     gap: 20px;
     justify-content: center;
     position: relative;
     padding: 30px;
-    background-color: #000; /* Deep black background */
+    background-color: #000;
+    border: 2px solid #00cccc;
     touch-action: none;
     user-select: none;
     
@@ -228,7 +293,6 @@ img.full-width {
     animation: crtFlicker 0.15s infinite;
   }
 
-  /* 2. Base Seat Style (Empty schematic entry) */
   .seat {
     width: 100px;
     height: 100px;
@@ -249,7 +313,6 @@ img.full-width {
     box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
   }
 
-  /* 3. Terminal Table Style */
   .table-center {
     grid-column: span 5;
     background: repeating-linear-gradient(
@@ -268,7 +331,6 @@ img.full-width {
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
   }
 
-  /* 4. Occupied/Filled Seats (Admiral and Player) */
   #admiral-seat, #player-seat {
     background-color: rgba(0, 204, 204, 0.2); /* Faint blue fill */
     border: 2px solid #00ffff; /* Brighter active outline */
@@ -294,25 +356,30 @@ img.full-width {
     background-color: rgba(0, 204, 204, 0.5); /* Brighter when grabbed */
   }
 
-  /* 5. The Target Seat (Dufry) - Pulsing red replaced by pulsing blue for monochrome theme */
   #target-seat {
     color: #00ffff;
     background-color: transparent;
     animation: targetPulse 1.5s infinite; /* Attracts attention */
   }
 
-  /* 6. Spacers */
   .empty-space {
     visibility: hidden; 
   }
 
-  /* 7. Hidden Link style (terminal color) */
+  /* NEW: Terminal Output Style */
+  #hidden-swap-link {
+    display: none; /* Hidden until JS triggers it */
+    grid-column: 1 / -1; /* Forces it to span completely across all 6 columns */
+    padding-top: 15px;
+    color: #00ff33; /* Glowing terminal green */
+    text-shadow: 0 0 5px #00ff33;
+	font-weight: bold;
+  }
+
   #hidden-swap-link tw-link {
     color: #00ffff !important;
     font-family: 'Courier New', monospace;
   }
-
-  /* --- ANIMATIONS --- */
 
   /* Subtitle screen flicker for CRT feel */
   @keyframes crtFlicker {
@@ -335,6 +402,62 @@ img.full-width {
       border: 2px solid #00cccc;
       box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
     }
+  }
+
+/*UPLOADING FUNCTION*/
+  .terminal-box {
+    background-color: #000;
+    border: 2px solid #00cccc;
+    border-radius: 2px;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+    animation: crtFlicker 0.15s infinite;
+    user-select: none;
+    line-height: 1.5;
+  }
+
+  .terminal-command {
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ffff;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  .terminal-command:hover {
+    background-color: rgba(0, 255, 255, 0.2);
+  }
+
+  .terminal-loading {
+    display: none; 
+    color: #00cccc;
+    margin-top: 15px;
+  }
+
+  .terminal-success {
+    display: none; /* Hidden until 100% */
+    margin-top: 15px;
+    color: #00ff33; /* Glowing terminal green */
+    text-shadow: 0 0 5px #00ff33;
+    font-weight: bold;
+  }
+  
+  /* Blinking cursor effect */
+  .cursor-blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  /* Animations */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-tag name="startup" color="yellow"></tw-tag><tw-passagedata pid="1" name="In Front of Grand Hall" tags="" position="200,50" size="100,100">$mainCharacter looks at the veil of stars above him and his gaze slowly comes down to the Grand Hall of the $academyShort that stands imposingly in front of him. Its size reminds him of the burden that now lies on his shoulders.
 
 He is just few steps from the entrance but cannot seem to persuade himself to complete the ascent to the butler, known as $butler, that stands in front of the doors.
@@ -741,7 +864,7 @@ Luen: “That sounds lovely. I hope I’ll get to meet him soon.”
 
 The Academis is talking with what looks like to be the chef. He faces the kitchen and his datapad is hanging from his belt on his right side.
 
-This will require nuance, but I can theoretically swipe access to his datapad if I touch it with my slicer and then stay close enough. Well… here goes.
+*The fastest way I can gain access to his datapad is to swipe it with my slicer. This will require nuance. Well… here goes.*
 
 Jothro starts toward the butler and prepares his slicer. He fakes bumping into him and touches his datapad.
 
@@ -793,10 +916,10 @@ Academis: “Yes, but maybe you could pay better attention to your surroundings,
 
 Jothro: “Certainly. I’m truly sorry.”
 
-The butler returns to his conversation with the chef while Jothro finds a seat nearby and takes out his slicer.
-&lt;span style=&quot;font-family:&#39;Courier New&#39;, monospace; padding-left: 20px;&quot;&gt; &amp;gt; ACCESS GRANTED.&lt;/span&gt;
+The butler returns to his conversation with the chef while Jothro finds a secluded spot nearby and takes out his slicer.
+&lt;span style=&quot;font-family:&#39;Courier New&#39;, monospace; padding-left: 20px;&quot;&gt; &amp;gt; SWIPE SUCCESSFUL.&lt;/span&gt;
 
-*Perfect, I’m in his datapad. Time to [[look for the seating plan|Find seating plan]].*</tw-passagedata><tw-passagedata pid="19" name="Upload new seating plan" tags="" position="2625,1400" size="100,100">Dialogue with the butler while uploading the new seating plan.
+*Perfect, I&#39;ve swipped all data from it. Time to [[look for the seating plan|Find seating plan]].*</tw-passagedata><tw-passagedata pid="19" name="Upload new seating plan" tags="" position="2950,1300" size="100,100">Dialogue with the butler while uploading the new seating plan.
 
 (if: $seatingChanged is true and $distractionPrepared is true)
 [
@@ -1486,20 +1609,17 @@ Luen looks at Jothro in confusion as he slowly leaves her.
 
 Luen: “What’s going on? Do you need my help?”
 
-Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be back as soon as possible, I promise.”</tw-passagedata><tw-passagedata pid="80" name="Swiping from butler&#39;s datapad" tags="" position="1950,1400" size="100,100">&lt;!-- 1. The Swipe Container --&gt;
-&lt;div id=&quot;swipe-box&quot; style=&quot;width: 400px; height: 60px; background: #333333; border: 1px solid #555; border-radius: 10px; position: relative; overflow: hidden; cursor: grab; user-select: none; touch-action: none;&quot;&gt;
-  &lt;!-- 2. The Color Fill Layer --&gt;
-  &lt;div id=&quot;swipe-fill&quot; style=&quot;width: 0px; height: 100%; background: #cb4b16; position: absolute; left: 0; top: 0; pointer-events: none;&quot;&gt;&lt;/div&gt;
-  &lt;!-- 3. The Text Layer (Fixed position) --&gt;
-  &lt;div style=&quot;position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #cb4b16; font-weight: bold; pointer-events: none; z-index: 2; text-shadow: 0 0 5px #cb4b16;&quot;&gt;Swipe to access&lt;/div&gt;
+Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be back as soon as possible, I promise.”</tw-passagedata><tw-passagedata pid="80" name="Swiping from butler&#39;s datapad" tags="" position="1950,1400" size="100,100">{
+&lt;div id=&quot;swipe-box&quot; class=&quot;terminal-swipe-box&quot;&gt;
+  &lt;div id=&quot;swipe-fill&quot; class=&quot;terminal-swipe-fill&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;terminal-swipe-text&quot;&gt;Swipe the datapad&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;!-- 4. The Hidden Link --&gt;
-&lt;span id=&quot;hidden-swipe-link&quot; style=&quot;opacity: 0; position: absolute; pointer-events: none;&quot;&gt;
+&lt;span id=&quot;hidden-swipe-link&quot; class=&quot;hidden-link&quot;&gt;
   [[Gained access to the datapad]]
 &lt;/span&gt;
 
-&lt;!-- 5. The Script --&gt;
+
 &lt;script&gt;
   let startX = 0;
   let isDragging = false;
@@ -1550,10 +1670,16 @@ Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be b
        resetBox();
     }
   });
-&lt;/script&gt;</tw-passagedata><tw-passagedata pid="81" name="Find seating plan" tags="" position="2250,1375" size="100,100">(display: &quot;Change seat MINIGAME&quot;)
+&lt;/script&gt;
+}</tw-passagedata><tw-passagedata pid="81" name="Find seating plan" tags="" position="2250,1375" size="100,100">Jothro has to dig through dozens of files but eventually he finds what he is looking for.
 
-(set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="82" name="Change made" tags="" position="2500,1375" size="100,100">Success</tw-passagedata><tw-passagedata pid="83" name="Change seat MINIGAME" tags="" position="2375,1425" size="100,100">{
-&lt;!-- Seating Plan Layout --&gt;
+(display: &quot;Change seat MINIGAME&quot;)
+
+(set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="82" name="Change made" tags="" position="2525,1375" size="100,100">*It’s done. Now I just need to upload it back to the butler’s datapad. I can do that externally, but I need to get closer.*
+
+Jothro finds the Academis not far from the kitchen, this time welcoming guests from other prestigious academies around the Dukedom. Jothro approaches as close as he dares to get a strong connection to the datapad and starts the upload.
+
+(display: &quot;Upload the plan&quot;)</tw-passagedata><tw-passagedata pid="83" name="Change seat MINIGAME" tags="" position="2375,1425" size="100,100">{
 &lt;div id=&quot;seating-plan&quot; class=&quot;seating-container&quot;&gt;
   &lt;!-- Top Row --&gt;
   &lt;div class=&quot;empty-space&quot;&gt;&lt;/div&gt;
@@ -1574,12 +1700,12 @@ Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be b
   &lt;div class=&quot;seat&quot;&gt;Luen R.&lt;/div&gt;
   &lt;div class=&quot;seat&quot;&gt;Zaris R.&lt;/div&gt;
   &lt;div id=&quot;player-seat&quot; class=&quot;seat&quot;&gt;Jothro P.&lt;/div&gt;
+  
+  &lt;!-- Output Terminal (Moved INSIDE the grid) --&gt;
+  &lt;div id=&quot;hidden-swap-link&quot;&gt;
+    [[&amp;gt;|Change made]] SEATING PLAN UPDATED.
+  &lt;/div&gt;
 &lt;/div&gt;
-
-&lt;!-- Output Terminal --&gt;
-&lt;span id=&quot;hidden-swap-link&quot; style=&quot;display:none; font-family:&#39;Courier New&#39;, monospace; padding-left: 20px;&quot;&gt;
-  [[&amp;gt;|Change made]] SEATING PLAN UPDATED.
-&lt;/span&gt;
 
 &lt;!-- Logic Script --&gt;
 &lt;script&gt;
@@ -1655,7 +1781,83 @@ Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be b
     }
   });
 &lt;/script&gt;
-}</tw-passagedata></tw-storydata>
+}</tw-passagedata><tw-passagedata pid="84" name="Upload the plan" tags="" position="2650,1450" size="100,100">{
+&lt;div class=&quot;terminal-box&quot;&gt;
+  &lt;!-- The text the player clicks --&gt;
+  &lt;div id=&quot;start-hack&quot; class=&quot;terminal-command&quot;&gt;
+    &amp;gt; UPLOAD SWIPE BACK TO ORIGIN.
+  &lt;/div&gt;
+
+  &lt;!-- The loading animation line --&gt;
+  &lt;div id=&quot;loading-line&quot; class=&quot;terminal-loading&quot;&gt;
+    UPLOADING&lt;span id=&quot;dots&quot;&gt;&lt;/span&gt; &lt;span id=&quot;percent&quot;&gt;0&lt;/span&gt;%
+  &lt;/div&gt;
+
+  &lt;!-- The text that appears at 100% --&gt;
+  &lt;div id=&quot;final-text&quot; class=&quot;terminal-success&quot;&gt;
+    UPLOAD SUCCESSFUL.&lt;br&gt;
+    TERMINATING CONNECTION.&lt;span class=&quot;cursor-blink&quot;&gt;_&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- The hidden link that tells Twine where to go --&gt;
+&lt;span id=&quot;hidden-redirect-link&quot; style=&quot;display:none;&quot;&gt;
+  [[Technopath interrupts]]
+&lt;/span&gt;
+
+&lt;!-- SCRIPT --&gt;
+&lt;script&gt;
+  const clickText = document.getElementById(&#39;start-hack&#39;);
+  const loadingLine = document.getElementById(&#39;loading-line&#39;);
+  const percentText = document.getElementById(&#39;percent&#39;);
+  const dotsText = document.getElementById(&#39;dots&#39;);
+  const finalText = document.getElementById(&#39;final-text&#39;);
+
+  let pct = 0;
+  let dotCount = 0;
+  let hasStarted = false;
+
+  clickText.addEventListener(&#39;click&#39;, function() {
+    if (hasStarted) return;
+    hasStarted = true;
+
+    loadingLine.style.display = &#39;block&#39;;
+    clickText.style.color = &#39;#00cccc&#39;;
+    clickText.style.textShadow = &#39;none&#39;;
+    clickText.style.cursor = &#39;default&#39;;
+    clickText.style.pointerEvents = &#39;none&#39;;
+
+    let hackInterval = setInterval(function() {
+      // Increase percentage by a random number between 1 and 4
+      pct += Math.floor(Math.random() * 4) + 1;
+      
+      dotCount = (dotCount + 1) % 4; 
+      dotsText.innerHTML = &#39;.&#39;.repeat(dotCount);
+
+      // CHANGED: Now stops at 100%
+      if (pct &gt;= 100) {
+        pct = 100;
+        clearInterval(hackInterval);
+        
+        setTimeout(() =&gt; {
+          loadingLine.style.color = &#39;#00ff33&#39;; // CHANGED: Turn the 100% line green
+          finalText.style.display = &#39;block&#39;;   
+          
+          // Wait 2.5 seconds, then jump to the next passage
+          setTimeout(() =&gt; {
+            let link = document.querySelector(&#39;#hidden-redirect-link tw-link&#39;);
+            if (link) link.click();
+          }, 3000); 
+
+        }, 400);
+      }
+
+      percentText.innerHTML = pct;
+
+    }, 100);
+  });
+&lt;/script&gt;
+}</tw-passagedata><tw-passagedata pid="85" name="Technopath interrupts" tags="" position="2800,1375" size="100,100"></tw-passagedata></tw-storydata>
 <script title="Twine engine code" data-main="harlowe">(function(){"use strict";
 var require,define;!function(){var e={},r={};require=function(i){var n=e[i];return n&&(r[i]=n[1].apply(void 0,n[0].map(require)),e[i]=void 0),r[i]},(define=function(r,i,n){if("function"==typeof r)return r();e[r]=[i,n]}).amd=!0}();/*!
  * https://github.com/paulmillr/es6-shim
