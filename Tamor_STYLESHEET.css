@@ -194,3 +194,134 @@ img.full-width {
   }  
   
 }
+
+/*CHANGING SEATS MINIGAME*/
+
+/* 1. Global Terminal Setup */
+  .seating-container {
+    display: grid;
+    grid-template-columns: repeat(6, 110px); /* Slightly wider for the border glow */
+    gap: 20px;
+    justify-content: center;
+    position: relative;
+    padding: 30px;
+    background-color: #000; /* Deep black background */
+    touch-action: none;
+    user-select: none;
+    
+    /* Monospaced Font (Pip-Boy standard) */
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    
+    /* CRT Flicker effect across the whole screen */
+    animation: crtFlicker 0.15s infinite;
+  }
+
+  /* 2. Base Seat Style (Empty schematic entry) */
+  .seat {
+    width: 100px;
+    height: 100px;
+    background: transparent; /* No fill by default */
+    border: 2px solid #00cccc; /* Dimmer phosphor blue outline */
+    color: #00cccc;
+    border-radius: 2px; /* Sharper corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1;
+    text-align: center;
+    box-sizing: border-box;
+    
+    /* Faint inner bloom effect */
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+  }
+
+  /* 3. Terminal Table Style */
+  .table-center {
+    grid-column: span 5;
+    background: repeating-linear-gradient(
+      0deg,
+      #000,
+      #000 2px,
+      rgba(0, 50, 50, 0.5) 2px,
+      rgba(0, 50, 50, 0.5) 4px
+    ); /* Scanlines inside the table */
+    height: 70px;
+    border-radius: 0;
+    border: 2px solid #00ffff; /* Brighter blue outline */
+    align-self: center;
+    
+    /* Glow bloom around table */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  /* 4. Occupied/Filled Seats (Admiral and Player) */
+  #admiral-seat, #player-seat {
+    background-color: rgba(0, 204, 204, 0.2); /* Faint blue fill */
+    border: 2px solid #00ffff; /* Brighter active outline */
+    color: #00ffff;
+    
+    /* Strong bloom glow */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 5px #00ffff;
+  }
+
+  /* Specific: Admiral has Gold trim in the logic, we'll make it a very bright phosphor cyan */
+  #admiral-seat {
+    border-color: #ffffff; /* Almost white-blue for extreme priority */
+  }
+
+  /* Specific: The drag-able Player seat */
+  #player-seat {
+    cursor: grab;
+    z-index: 10;
+  }
+  #player-seat:active {
+    cursor: grabbing;
+    background-color: rgba(0, 204, 204, 0.5); /* Brighter when grabbed */
+  }
+
+  /* 5. The Target Seat (Dufry) - Pulsing red replaced by pulsing blue for monochrome theme */
+  #target-seat {
+    color: #00ffff;
+    background-color: transparent;
+    animation: targetPulse 1.5s infinite; /* Attracts attention */
+  }
+
+  /* 6. Spacers */
+  .empty-space {
+    visibility: hidden; 
+  }
+
+  /* 7. Hidden Link style (terminal color) */
+  #hidden-swap-link tw-link {
+    color: #00ffff !important;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* --- ANIMATIONS --- */
+
+  /* Subtitle screen flicker for CRT feel */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+
+  /* The destination box "pings" visually */
+  @keyframes targetPulse {
+    0% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+    50% { 
+      border: 2px solid #ffffff; /* Bright white-blue flash */
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    100% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+  }

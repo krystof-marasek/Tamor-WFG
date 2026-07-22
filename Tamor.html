@@ -9,7 +9,7 @@
 </head>
 <body>
 <tw-story><noscript><tw-noscript>JavaScript needs to be enabled to play Tamor.</tw-noscript></noscript></tw-story>
-<tw-storydata name="Tamor" startnode="62" creator="Twine" creator-version="2.12.0" format="Harlowe" format-version="3.3.9" ifid="A4204195-644A-4ACB-9284-8874DBF6BC3E" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* 
+<tw-storydata name="Tamor" startnode="58" creator="Twine" creator-version="2.12.0" format="Harlowe" format-version="3.3.9" ifid="A4204195-644A-4ACB-9284-8874DBF6BC3E" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* 
 	Twine CSS Template
 	
 	Simple CSS Template to help Twine authors change 
@@ -204,11 +204,142 @@ img.full-width {
 	  width: 100%;
   }  
   
-}</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-tag name="startup" color="yellow"></tw-tag><tw-passagedata pid="1" name="In Front of Grand Hall" tags="" position="175,50" size="100,100">$mainCharacter looks at the veil of stars above him and his gaze slowly comes down to the Grand Hall of the $academy that stands imposingly in front of him. Its size reminds him of the burden that now lies on his shoulders.
+}
 
-He is just few steps from the entrance but cannot seem to persuade himself to complete the ascend to the butler, known as $butler, that stands in front of the doors.
+/*CHANGING SEATS MINIGAME*/
 
-[[Find the courage and ascend|Talking with the Academis]]</tw-passagedata><tw-passagedata pid="2" name="Talking with the Academis" tags="" position="325,50" size="100,100">The older man raises his head from his datapad and acknowledges Jothro’s approach with a questioning gaze.
+/* 1. Global Terminal Setup */
+  .seating-container {
+    display: grid;
+    grid-template-columns: repeat(6, 110px); /* Slightly wider for the border glow */
+    gap: 20px;
+    justify-content: center;
+    position: relative;
+    padding: 30px;
+    background-color: #000; /* Deep black background */
+    touch-action: none;
+    user-select: none;
+    
+    /* Monospaced Font (Pip-Boy standard) */
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    
+    /* CRT Flicker effect across the whole screen */
+    animation: crtFlicker 0.15s infinite;
+  }
+
+  /* 2. Base Seat Style (Empty schematic entry) */
+  .seat {
+    width: 100px;
+    height: 100px;
+    background: transparent; /* No fill by default */
+    border: 2px solid #00cccc; /* Dimmer phosphor blue outline */
+    color: #00cccc;
+    border-radius: 2px; /* Sharper corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1;
+    text-align: center;
+    box-sizing: border-box;
+    
+    /* Faint inner bloom effect */
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+  }
+
+  /* 3. Terminal Table Style */
+  .table-center {
+    grid-column: span 5;
+    background: repeating-linear-gradient(
+      0deg,
+      #000,
+      #000 2px,
+      rgba(0, 50, 50, 0.5) 2px,
+      rgba(0, 50, 50, 0.5) 4px
+    ); /* Scanlines inside the table */
+    height: 70px;
+    border-radius: 0;
+    border: 2px solid #00ffff; /* Brighter blue outline */
+    align-self: center;
+    
+    /* Glow bloom around table */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  /* 4. Occupied/Filled Seats (Admiral and Player) */
+  #admiral-seat, #player-seat {
+    background-color: rgba(0, 204, 204, 0.2); /* Faint blue fill */
+    border: 2px solid #00ffff; /* Brighter active outline */
+    color: #00ffff;
+    
+    /* Strong bloom glow */
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 5px #00ffff;
+  }
+
+  /* Specific: Admiral has Gold trim in the logic, we'll make it a very bright phosphor cyan */
+  #admiral-seat {
+    border-color: #ffffff; /* Almost white-blue for extreme priority */
+  }
+
+  /* Specific: The drag-able Player seat */
+  #player-seat {
+    cursor: grab;
+    z-index: 10;
+  }
+  #player-seat:active {
+    cursor: grabbing;
+    background-color: rgba(0, 204, 204, 0.5); /* Brighter when grabbed */
+  }
+
+  /* 5. The Target Seat (Dufry) - Pulsing red replaced by pulsing blue for monochrome theme */
+  #target-seat {
+    color: #00ffff;
+    background-color: transparent;
+    animation: targetPulse 1.5s infinite; /* Attracts attention */
+  }
+
+  /* 6. Spacers */
+  .empty-space {
+    visibility: hidden; 
+  }
+
+  /* 7. Hidden Link style (terminal color) */
+  #hidden-swap-link tw-link {
+    color: #00ffff !important;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* --- ANIMATIONS --- */
+
+  /* Subtitle screen flicker for CRT feel */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+
+  /* The destination box "pings" visually */
+  @keyframes targetPulse {
+    0% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+    50% { 
+      border: 2px solid #ffffff; /* Bright white-blue flash */
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    100% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+  }</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-tag name="startup" color="yellow"></tw-tag><tw-passagedata pid="1" name="In Front of Grand Hall" tags="" position="200,50" size="100,100">$mainCharacter looks at the veil of stars above him and his gaze slowly comes down to the Grand Hall of the $academyShort that stands imposingly in front of him. Its size reminds him of the burden that now lies on his shoulders.
+
+He is just few steps from the entrance but cannot seem to persuade himself to complete the ascent to the butler, known as $butler, that stands in front of the doors.
+
+[[Find the courage and ascend|Talking with the Academis]]</tw-passagedata><tw-passagedata pid="2" name="Talking with the Academis" tags="" position="350,50" size="100,100">The older man raises his head from his datapad and acknowledges Jothro’s approach with a questioning gaze.
 
 |option1&gt;[$mainCharacterFull]
 (click:?option1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
@@ -219,7 +350,7 @@ $butler: &quot;Ah, here. My sincerest welcome, Prime Graduate $mainCharacterSurn
 
 The title suddenly feels meaningless. The two years $mainCharacter spent here at the $academyShort, climbing the ranks to be able to meet the $admiralShort, were only in service of the mission.
 
-$butler: &quot;The dinner will commence in approximately one hour in the dinner chamber. Until then, you are welcome to enjoy yourself in the main hall with the rest of the graduates. All drinks are provided by the $academyShort and there are some social activities that you can |option2&gt;[join].&quot;
+$butler: &quot;The dinner will be held in the dinner chamber. Until then, you are welcome to enjoy yourself in the main hall with the rest of the graduates. All drinks are provided by the $academyShort and there are some social activities that you can |option2&gt;[join].&quot;
 ]
 (click:?option2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
 [
@@ -234,7 +365,7 @@ The butler shows $mainCharacter the visualization of the seating plan on his dat
 $butler: “Enjoy the rest of your night, Prime Graduate  $mainCharacterSurname.”
 
 [[Enter inside]]
-]</tw-passagedata><tw-passagedata pid="3" name="Enter inside" tags="" position="475,50" size="100,100">The Grand Hall is the pinnacle of contemporary $dukedomShort architecture. A stunning synthesis of hundreds of years of deep-space exploration and biomorphic design. The almost skeletal ceiling dominates the main hall. A sculpted lattice of metal alloy and glass intertwines from back all the way to the front, adorned with plasma nodes that radiate warm, amber energy to all corners of the hall.
+]</tw-passagedata><tw-passagedata pid="3" name="Enter inside" tags="" position="500,50" size="100,100">The Grand Hall is the pinnacle of contemporary $dukedomShort architecture. A stunning synthesis of hundreds of years of deep-space exploration and biomorphic design. The almost skeletal ceiling dominates the main hall. A sculpted lattice of metal alloy and glass intertwines from back all the way to the front, adorned with plasma nodes that radiate warm, amber energy to all corners of the hall.
 
 Similarly constructed support columns seamlessly connect the ceiling to the equally impressive floor, creating a dizzying sense of perspective and an overwhelming, orbital scale that reflects the reach and power of the $dukedomLong.
 
@@ -287,11 +418,46 @@ Admiral Kastel: “You have a firm hand. I like it! Oh, my husband is getting to
 
 She finishes her last canapé and hastily joins her husband.
 
-[[Continue|Continue after looking for Admiral]]
+[[Continue|Continue after meeting the Admiral]]
 ]
-]</tw-passagedata><tw-passagedata pid="6" name="Go look for some of your friends" tags="" position="700,350" size="100,100">Some of Jothro&#39;s classmates are standing in one of the corners, laughing and with plentiful drinks in their hands
+]</tw-passagedata><tw-passagedata pid="6" name="Go look for some of your friends" tags="" position="700,350" size="100,100">Jothro slowly cuts through the crowds of people making his way towards his friends. On his way, he spots what is causing the commotion he noticed when looking around. 
 
-[[Go and join them|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="7" name="Startup" tags="startup" position="50,175" size="100,100">(set: $mainCharacter to &quot;Jothro&quot;)
+Everybody involved is hungrily consuming the words of one individual standing by the refreshments table, clad in a pristine military outfit adorned with countless medals and ornaments. He is seemingly in the middle of telling an engaging story while stuffing himself with wine and canapés. Jothro stops and focuses on him.
+
+|option1&gt;[*Is that…?*]
+	(click:?option1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Unknown: “Gods, is he boasting about our leisure starship again?”
+
+A stately woman appears next to Jothro while eating a canapé of her own. She is dressed in a lavish emerald dress that captures and alters the ambient, amber light and reflects it back with a brownish tint that almost matches her skin. She addresses Jothro more directly.
+
+Unknown: “I leave to use the bathroom and here he is again, gathering crowds. I’m pretty sure that even nobles beyond the Dukedom know about our favorite pass time activity.”
+
+[|CH1&gt;[|A&gt;[*What is happening?!*]
+|A&gt;[*It&#39;s her, isn’t it?*]
+|A&gt;[*What should I do?*]]]
+]
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Unknown: “Ah! Where are my manners? Admiral Yovanna Kastel.”
+
+Scorching sun. Bitting sand. Unquenchable thirst.
+Jothro’s throat dries out and he is barely able to get hold of himself to be able to reply.
+
+|option2&gt;[&quot;Prime Graduate Jothro Pentry, ma’am.&quot;]
+	(click:?option2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Admiral Kastel: “One of the Prime Graduates? Lovely to meet you then, young man.”
+
+She extends her hand and Jothro, out of habit, delivers a firm handshake.
+
+Admiral Kastel: “You have a firm hand. I like it! Oh, my husband is getting to the part where I have to stop him lest my pride is going to be scarred. I’m looking forward to talking with you during the dinner.”
+
+She finishes her last canapé and hastily joins her husband.
+
+[[Continue|Continue after meeting the Admiral]]
+]
+]</tw-passagedata><tw-passagedata pid="7" name="Startup" tags="startup" position="50,175" size="100,100">(set: $mainCharacter to &quot;Jothro&quot;)
 (set: $mainCharacterSurname to &quot;Pentry&quot;)
 (set: $mainCharacterFull to &quot;Jothro Pentry&quot;)
 (set: $mainCharacterPossessive to &quot;Jothro&#39;s&quot;)
@@ -312,15 +478,21 @@ She finishes her last canapé and hastily joins her husband.
 
 (set: $admiralHusband to &quot;Berkem&quot;)
 
-(set: $distractionFriend to &quot;Mav&quot;)
+(set: $professorOne to &quot;Professor Tula&quot;)
+(set: $professorTwo to &quot;Professor Ostor&quot;)
 
-&lt;!--Dufry Nupot--&gt;
+(set: $friendOne to &quot;Mav&quot;)
+(set: $friendTwo to &quot;Vanda&quot;)
+
+(set: $studentOne to &quot;Dufry O.&quot;)
 
 (set: $mcHomePlanet to &quot;Tamor&quot;)
 (set: $dukedomShort to &quot;Terran&quot;)
 (set: $dukedomLong to &quot;Terran Dukedom&quot;)
 (set: $academyShort to &quot;Academy&quot;)
 (set: $academyLong to &quot;Terran Academy&quot;)
+
+(set: $cards to &quot;Hazdal cards&quot;)
 
 (set: $drunkenness to 0)
 (set: $receptionAdmiralPath to false)
@@ -330,7 +502,8 @@ She finishes her last canapé and hastily joins her husband.
 (set: $camerasHacked to false)
 (set: $distractionPrepared to false)
 
-(set: $dinnerDialogue to &quot;&quot;)</tw-passagedata><tw-passagedata pid="8" name="Observe the hall; Admiral joins" tags="" position="850,50" size="100,100">&lt;!--ADD A DESCRIPTION FOR EACH DRINK--&gt;
+(set: $dinnerDialogue to &quot;&quot;)
+(set: $uncleQuestion to &quot;&quot;)</tw-passagedata><tw-passagedata pid="8" name="Observe the hall; Admiral joins" tags="" position="850,50" size="100,100">&lt;!--ADD A DESCRIPTION FOR EACH DRINK--&gt;
 The strength of the drink overwhelms Jothro at first but then when the exotic taste settles in, he finds it quite pleasing. Jothro turns around and leans on the bar while enjoying the drink.
 
 Jothro’s friends are still arguing but it’s clearly in good spirits and over something undoubtably ridiculous. One of them spots Jothro watching and enthusiastically invites him over.
@@ -371,9 +544,9 @@ She finishes her last canapé and hastily joins her husband.
 [[Continue|Continue after drink]]
 ]
 ]
-(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="9" name="Admiral and her husband conversation" tags="" position="1000,200" size="100,100">The Admiral and her husband are slowly making their way around the room. Several members of the Admiral’s personal guard, known as Technopaths, are clearing them a path through the crowd.
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="9" name="Admiral and her husband conversation" tags="" position="1175,200" size="100,100">The Admiral and her husband are slowly making their way around the room. Several members of the Admiral’s personal guard, known as Technopaths, are clearing them a path through the crowd.
 
-They’re going to be a problem. I must get rid of them somehow during the dinner. Otherwise, they’re going to detect the upload.
+*They’re going to be a problem. I must get rid of them somehow during dinner. Otherwise, they’re going to detect the upload. Maybe Mav will be able to help me out...*
 
 Jothro starts shadowing them and attempts to eavesdrop on their conversation.
 
@@ -389,107 +562,241 @@ The husband boisterously laughs while the Admiral slaps his arm and smiles herse
 
 [[Continue|Admiral and her husband conversation cont&#39;d]]
 
-(set: $receptionAdmiralPath to true)</tw-passagedata><tw-passagedata pid="10" name="Jothro&#39;s friends at the reception" tags="" position="1000,350" size="100,100">Have a quick chat; They recap what happened during the past two years
+(set: $receptionAdmiralPath to true)</tw-passagedata><tw-passagedata pid="10" name="Jothro&#39;s friends at the reception" tags="" position="1175,350" size="100,100">Mav: “No way, there’s no chance that will ever happen.”
 
-Mav, a good friend of Jothro, offers him a drink
+Vanda: “I’m telling you, Proxima is finally going to win. They’ve never had a better team.”
+
+Mav: “Hey, Jothro! Come and tell Vanda she’s speaking nonsense. There is no way Terra won’t win, right?”
+
+[|CH1&gt;[|A&gt;[&quot;No, I think Proxima could finally win.&quot;]
+|B&gt;[&quot;Yeah, it&#39;ll be Terra like every year.&quot;]
+|C&gt;[&quot;What are you two arguing about again?&quot;]]]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;Never say never. I think Proxima could break the curse and win the races this year.&quot;
+
+Mav scoffs at Jothro&#39;s comment.
+
+Vanda: &quot;Jothro is right. Their team is made up of some of the best racers in the Dukedom, even some that raced for Terra before. If it’s ever going to happen, it’s this year.&quot;
+
+Mav: “The Solar Races is a Terran sport. There is no reality where they would not dominate it.”
+
+Vanda: “And what isn’t Terran in the Dukedom?”
+
+Mav: “Hah, good point.”
+
+Mav grabs a drink from the table next to him and offers it to Jothro.
+
+Mav: “Come on! Have a drink with us, Jothro. We have to celebrate!”
 
 [[Accept|Accept first drink from Mav]]
 [[Refuse|Refuse first drink from Mav]]
-
-(set: $receptionFriendsPath to true)</tw-passagedata><tw-passagedata pid="11" name="Luen arrives" tags="" position="1450,875" size="100,100">(if: $receptionAdmiralPath is true)
-[
-Luen intercepts Jothro out of nowhere
-She&#39;s gonna say that the other classmates are going to play cards, but she wants to spend some time with you before joining them.
-
-[[Start walking with Luen]]
 ]
-
-(else-if: $receptionFriendsPath is true)
+(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
 [
-Luen intercepts Jothro out of nowhere
-She jokingly takes Jothro away from others so she can properly talk with him
+Jothro: “I think it’ll be Terra again, unfortunately. They produce the best racers because they have the support of the House.”
 
-[[Start walking with Luen]]
+Mav points at Jothro while putting on a sly smile.
+
+Vanda: &quot;That’s a good point. But Proxima’s team is made up of some of the best racers in the Dukedom, even some that raced for Terra before. If it’s ever going to happen, it’s this year.&quot;
+
+Mav: “The Solar Races is a Terran sport. There is no reality where they would not dominate it.”
+
+Vanda: “And what isn’t Terran in the Dukedom?”
+
+Mav: “Hah, good point.”
+
+Mav grabs a drink from the table next to him and offers it to Jothro.
+
+Mav: “Come on! Have a drink with us, Jothro. We have to celebrate!”
+
+[[Accept|Accept first drink from Mav]]
+[[Refuse|Refuse first drink from Mav]]
+]
+(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: “What is this about again?”
+
+Mav: “The Solar Races!”
+Vanda: “The Solar Races!”
+
+Jothro laughs while apologetically raising his hands.
+
+Vanda: “Proxima’s team is made up of some of the best racers in the Dukedom, even some that raced for Terra before. If it’s ever going to happen, it’s this year.&quot;
+
+Mav: “The Solar Races is a Terran sport. There is no reality where they would not dominate it.”
+
+Vanda: “And what isn’t Terran in the Dukedom?”
+
+Mav: “Hah, good point.”
+
+Mav grabs a drink from the table next to him and offers it to Jothro.
+
+Mav: “Come on! Have a drink with us, Jothro. We have to celebrate!”
+
+[[Accept|Accept first drink from Mav]]
+[[Refuse|Refuse first drink from Mav]]
+]
+(set: $receptionFriendsPath to true)</tw-passagedata><tw-passagedata pid="11" name="Accept first drink from Mav" tags="" position="1325,350" size="100,100">(if: $drunkenness is 1)
+[
+This drink does not sting as the one Jothro had before, but it still momentarily clouds Jothro&#39;s mind. The taste brings something entirely new and odly refreshing.
 ]
 
 (else:)
 [
-ERROR
-]</tw-passagedata><tw-passagedata pid="12" name="Accept first drink from Mav" tags="" position="1150,350" size="100,100">Describe the drink Jothro is about to drink
+The strength of the drink overwhelms Jothro at first but then when the exotic taste settles in, he finds it quite pleasing.
+]
 
 [[Continue|Continue talking with friends]]
 
-(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="13" name="Refuse first drink from Mav" tags="" position="1150,475" size="100,100">(if: $drunkenness is 1)
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="12" name="Refuse first drink from Mav" tags="" position="1325,475" size="100,100">(if: $drunkenness is 1)
 [
 Jothro: &quot;No thanks, I already had one.&quot;
 ]
 
 (else:)
 [
-Jothro: &quot;Not really in the mood for drinking today.&quot;
+Jothro: &quot;Maybe later.&quot;
 ]
 
-[[Continue|Continue talking with friends]]</tw-passagedata><tw-passagedata pid="14" name="Continue talking with friends" tags="" position="1300,350" size="100,100">Conversation continues
+[[Continue|Continue talking with friends]]</tw-passagedata><tw-passagedata pid="13" name="Continue talking with friends" tags="" position="1475,350" size="100,100">All three sit down at one of the lavish tables and Mav’s attention turns to Jothro.
 
-They hint at planning to play cards later
+Mav: “So Prime Graduate, huh? You can pick pretty much any position in the military while being a Prime, no?”
 
-Jothro spots the Admiral walking by, laughing loudly
-She is not the person Jothro expected; in Jothro&#39;s mind she is supposed to be stern, stoic, and a ruthless monster
-Several Technopaths are protecting her; no doubt they&#39;ll be in the dinner chamber as well
+Jothro: “Yeah, but I’m still not decided where to go. I’m planning on taking a bit of a break and then see where life will lead me.”
 
-[[Eavesdrop for a bit|Luen arrives]]</tw-passagedata><tw-passagedata pid="15" name="Luen convo cont&#39;d" tags="" position="1750,875" size="100,100">Dialogue with Luen |option&gt;[clicking on the option]
+Vanda: “Is Luen part of that plan?” &lt;!--FIX THIS--&gt;
 
-(click:?option)
+[|CH1&gt;[|A&gt;[&quot;We&#39;ll see.&quot;]
+|B&gt;[&quot;I hope so.&quot;]]]
+(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
 [
-text
+Jothro: “I don’t know. I haven’t talked with her about it yet. I’m not sure if we’re even there yet.”
 
-[|CH1&gt;[|A&gt;[&quot;choice A&quot;]
-|B&gt;[&quot;choice B&quot;]
-|C&gt;[&quot;choice C&quot;]]]
+Vanda: “Are you kidding? Open your eyes! Have you seen how she looks at you whenever you’re together?”
+
+Mav: “I haven&#39;t seen longing quite like that since Principalis got caught making eyes at the Duke’s statue.”
+
+Vanda tisks at Mav and punches him in his arm. Mav reels away while sinisterely laughing.
+
+Mav: “What?! It’s true! Where is Luen anyway?”
+
+Vanda: “She was still getting dressed when I was leaving. I think she’ll be here soon.”
+
+Mav: “Good! We have no chance at winning cards without her. No offense, Jothro.”
+
+They proceed to talk about cards and which team to challenge first when Luen arrives. Jothro spots the Admiral and her husband from the corner of his vision as they’re standing in front of the statue of the Duke, discussing something. Several guards, known as Technopaths, are holding watch around them.
+
+*They’re going to be a problem. I must get rid of them somehow during dinner. Otherwise, they’re going to detect the upload. Maybe Mav will be able to help me out...*
+
+[[Excuse yourself|Luen arrives]]
+]
+(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: “I certainly hope so. I haven’t talked with her about it yet, but I like her.”
+
+Vanda: “Yeah, no shit! Have you seen how she looks at you whenever you’re together?”
+
+Mav: “I haven&#39;t seen longing quite like that since Principalis got caught making eyes at the Duke’s statue.”
+
+Vanda tisks at Mav and punches him in his arm. Mav reels away while sinisterely laughing.
+
+Mav: “What?! It’s true! Where is Luen anyway?”
+
+Vanda: “She was still getting dressed when I was leaving. I think she’ll be here soon.”
+
+Mav: “Good! We have no chance at winning cards without her. No offense, Jothro.”
+
+They proceed to talk about cards and which team to challenge first when Luen arrives. Jothro spots the Admiral and her husband from the corner of his vision as they’re standing in front of the statue of the Duke, discussing something. Several guards, known as Technopaths, are holding watch around them.
+
+*They’re going to be a problem. I must get rid of them somehow during dinner. Otherwise, they’re going to detect the upload. Maybe Mav will be able to help me out...*
+
+[[&quot;Mav?&quot;|Luen arrives]]
+]</tw-passagedata><tw-passagedata pid="14" name="Luen convo about uncle" tags="" position="1425,975" size="100,100">(if: $uncleQuestion is &quot;great&quot;)
+[
+Jothro: “It was great, better than I would imagine. We got to visit a lot of planets.”
+]
+(else-if: $uncleQuestion is &quot;refreshing&quot;)
+[
+Jothro: “Amazing and very refreshing after the months we spent at the Academy, preparing for the final exam.”
+]
+(else-if: $uncleQuestion is &quot;eventful&quot;)
+[
+Jothro: “It was great, better than I would imagine. We got to visit a lot of planets.”
+]
+(else:)
+[
+ERROR
 ]
 
-(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
-(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
-(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+Jothro’s consciousness screams at the lie. There was no vacation, only rigorous training with his uncle at the Anarchs’ base in preparation for tonight. Countless simulations of the dinner meant to prepare Jothro for how to upload incriminating intel on the Admiral’s datapad.
 
-[[Infiltrate the security room|Sabotage the cameras]]
-[[Join her for a few rounds of cards|Get rid of the guards]]
-[[Seek out the butler|Change the seating order]]</tw-passagedata><tw-passagedata pid="16" name="Change the seating order" tags="" position="1900,1350" size="100,100">Jothro exuses himself and says he has to take care of something first, but he&#39;ll join her right after
+Luen: “That sounds lovely. I hope I’ll get to meet him soon.”
 
-The Academis is talking with one of the kitchen&#39;s staff
+[[Continue|Assessing the situation]]</tw-passagedata><tw-passagedata pid="15" name="Change the seating order" tags="" position="1825,1350" size="100,100">(if: $distractionPrepared is false)
+[
+(display: &quot;Excuse to Luen&quot;)
+]
 
-Jothro accidentely bumps into the butler to swipe access to his datapad
+The Academis is talking with what looks like to be the chef. He faces the kitchen and his datapad is hanging from his belt on his right side.
 
-[[Swipe|Swipe the butler&#39;s datapad]]</tw-passagedata><tw-passagedata pid="17" name="Get rid of the guards" tags="" position="1900,1100" size="100,100">(if: $camerasHacked or $seatingChanged is true)
+This will require nuance, but I can theoretically swipe access to his datapad if I touch it with my slicer and then stay close enough. Well… here goes.
+
+Jothro starts toward the butler and prepares his slicer. He fakes bumping into him and touches his datapad.
+
+(display: &quot;Swiping from butler&#39;s datapad&quot;)</tw-passagedata><tw-passagedata pid="16" name="Get rid of guards" tags="" position="1900,1100" size="100,100">(if: $camerasHacked is true or $seatingChanged is true)
 [
 Some games have alredy passed
 Luen recaps what Jothro missed out on (e.g., a student beat a teacher)
 ]
 
-(else:)
+Jothro: “Yeah, of course. Let’s play.”
+
+Luen and Jothro walk over to the tables where Hazdal Cards matches are being held. This kind of game is especially loved by the military as it requires strong sense of strategy, flawless teamwork, and cunning tactics. Mav and Vanda are already passionately watching one of the matches being played between a team of teachers and a team of graduates.
+
+[|CH1&gt;[|A&gt;[&quot;How&#39;s it going?&quot;]
+|B&gt;[&quot;Who&#39;s winning?&quot;]]]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
 [
-Observe the first game being played
-A student beats a teacher
+Jothro: “How’s it going so far?”
+
+(display: &quot;Get rid of the guards; previous game summary&quot;)
 ]
 
-Mav offers Jothro a drink
+	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: “So, who’s winning?”
 
-[[Accept|Accepted second drink from Mav]]
-[[Refures|Refused second drink from Mav]]</tw-passagedata><tw-passagedata pid="18" name="Sabotage the cameras" tags="" position="1900,875" size="100,100">Jothro exuses himself and says he has to take care of something first, but he&#39;ll join her right after
+(display: &quot;Get rid of the guards; previous game summary&quot;)
+]</tw-passagedata><tw-passagedata pid="17" name="Sabotage the cameras" tags="" position="1900,875" size="100,100">(if: $distractionPrepared is false)
+[
+(display: &quot;Excuse to Luen&quot;)
+]
+
+Jothro exuses himself and says he has to take care of something first, but he&#39;ll join her right after
 
 Observe for a bit to see if anyone is in
 
 One guard leaves and Jothro cannot see anyone else inside
 
-[[Hack-in|Hacking minigame?]]</tw-passagedata><tw-passagedata pid="19" name="Swipe the butler&#39;s datapad" tags="" position="2050,1350" size="100,100">Look through the seating plan
+[[Hack-in|Hacking minigame?]]</tw-passagedata><tw-passagedata pid="18" name="Gained access to the datapad" tags="" position="2100,1375" size="100,100">Both Jothro and the Academis stumble before they find their footing.
 
-SMALL MINIGAME to change the seating plan?
+Academis: “What in the voids?”
 
-Approach the Academis to ask him again where Jothro is supposed to sit
+Jothro: “I’m so sorry. Are you okay?”
 
-[[Approach him|Upload new seating plan]]
+Academis sighs and straightens his suit.
 
-(set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="20" name="Upload new seating plan" tags="" position="2200,1350" size="100,100">Dialogue with the butler while uploading the new seating plan.
+Academis: “Yes, but maybe you could pay better attention to your surroundings, Graduate Pentry?”
+
+Jothro: “Certainly. I’m truly sorry.”
+
+The butler returns to his conversation with the chef while Jothro finds a seat nearby and takes out his slicer.
+&lt;span style=&quot;font-family:&#39;Courier New&#39;, monospace; padding-left: 20px;&quot;&gt; &amp;gt; ACCESS GRANTED.&lt;/span&gt;
+
+*Perfect, I’m in his datapad. Time to [[look for the seating plan|Find seating plan]].*</tw-passagedata><tw-passagedata pid="19" name="Upload new seating plan" tags="" position="2625,1400" size="100,100">Dialogue with the butler while uploading the new seating plan.
 
 (if: $seatingChanged is true and $distractionPrepared is true)
 [
@@ -498,111 +805,175 @@ A bell rings and the top students are called to join the Admiral for the [[dinne
 
 (else:)
 [
-[[Go back to Luen|Get rid of the guards]]
-]</tw-passagedata><tw-passagedata pid="21" name="Dinner starts" tags="" position="2750,1100" size="100,100">Enter the dinner chamber; not many people there so far
+[[Go back to Luen|Get rid of guards]]
+]</tw-passagedata><tw-passagedata pid="20" name="Dinner starts" tags="" position="3125,1100" size="100,100">Enter the dinner chamber; not many people there so far
 
 (if: $camerasHacked is true)
 [
 Check that the cameras are truely turned off
-
-One seat next to the Admiral&#39;s seat is still open -&gt; try and take it
-
-[[Take the open seat next to the Admiral]]
-[[Take your assigned seat]]
 ]
 
 (else-if: $seatingChanged is true)
 [
-Jothro goes to take his seat next to the Admiral, but another student (Dufry) stops him; the seat is supposed to be his since he graduated with the best point average
 
-	[
-|CH2&gt;[|A&gt;[&quot;There was a mistake mistaken.&quot;]
-|B&gt;[&quot;What are you on about?&quot;]
-|C&gt;[&quot;I&#39;ve talked with the butler&quot;]]
-    ]
 ]
 
-	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
-[
-&quot;Jothro: Oh yeah there was a mistake in the seating plan, sorry. You are now sitting threre at the end.&quot;
+[[Proceed to sit down]]</tw-passagedata><tw-passagedata pid="21" name="Hacking minigame?" tags="" position="2050,875" size="100,100">HACKING MINIGAME?
 
-[[Proceed to sit down]]
-]
-	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
-[
-&quot;Jothro: What are you on about? The Principalis is the last one to decide who sits where. I guess he likes me better than you.&quot;
-
-[[Proceed to sit down]]
-]
-	(click:?C)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
-[
-&quot;Jothro: I literarly just talked with the butler. I&#39;ve been assigned this seat.&quot;
-
-[[Proceed to sit down]]
-]</tw-passagedata><tw-passagedata pid="22" name="Hacking minigame?" tags="" position="2050,875" size="100,100">HACKING MINIGAME?
-
-[[Go inside|Inside the security room]]</tw-passagedata><tw-passagedata pid="23" name="Inside the security room" tags="" position="2200,875" size="100,100">Sabotage the cameras
+[[Go inside|Inside the security room]]</tw-passagedata><tw-passagedata pid="22" name="Inside the security room" tags="" position="2200,875" size="100,100">Sabotage the cameras
 Gain remote access to the cameras
 
 [[Sneak out|Sabotage completed]]
-(set: $camerasHacked to true)</tw-passagedata><tw-passagedata pid="24" name="Sabotage completed" tags="" position="2350,875" size="100,100">(if: $camerasHacked is true and $distractionPrepared is true)
+(set: $camerasHacked to true)</tw-passagedata><tw-passagedata pid="23" name="Sabotage completed" tags="" position="2350,875" size="100,100">(if: $camerasHacked is true and $distractionPrepared is true)
 [
 A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
 ]
 
 (else:)
 [
-[[Go back to Luen|Get rid of the guards]]
-]</tw-passagedata><tw-passagedata pid="25" name="Accepted second drink from Mav" tags="" position="2075,1025" size="100,100">Describe the drink Jothro is about to drink
-
-(if: $drunkenness is 2)
+[[Go back to Luen|Get rid of guards]]
+]</tw-passagedata><tw-passagedata pid="24" name="Accepted second drink from Mav" tags="" position="2325,1075" size="100,100">(if: $drunkenness is 2)
 [
-The effects of this drink will be really noticable.
+Jothro: &quot;Yeah, I&#39;m gonna need it.&quot;
+
+Everyone takes up a strong shot and quickly down it. To Jothro, the shot does not feel strong anymore but the effects on his thinking are noticeable.
+
+(display: &quot;Teacher welcomes them to the game&quot;)
 ]
 
 (else:)
 [
-Jothro will get midly affected.
+Jothro: &quot;Yeah, I&#39;m gonna need it.&quot;
+
+Everyone takes up a strong shot and quickly down it. The alcohol leaves a burning sensation in Jothro’s throat, but he suddenly feels more alive and aware.
+
+(display: &quot;Teacher welcomes them to the game&quot;)
 ]
 
-[[Start playing the card game]]
+(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="25" name="Refused second drink from Mav" tags="" position="2325,1225" size="100,100">Jothro: &quot;Maybe let&#39;s drink after we beat them?&quot;
 
-(set: $drunkenness to $drunkenness + 1)</tw-passagedata><tw-passagedata pid="26" name="Refused second drink from Mav" tags="" position="2075,1175" size="100,100">(if: $drunkenness is 2)
+Luen: &quot;I agree, let&#39;s keep our minds clear.&quot;
+
+Mav: &quot;Fair enough.&quot;
+
+(display: &quot;Teacher welcomes them to the game&quot;)</tw-passagedata><tw-passagedata pid="26" name="Prepare distraction" tags="" position="2775,1100" size="100,100">
+
+Mav: &quot;Yeah, what&#39;s up?&quot;
+
+(if: $drunkenness is &gt;=3)
 [
-Jothro: &quot;No thanks, I think I had enough for tonight..&quot;
+He appears quite tipsy from all the drinks he has had. Jothro also feels the effects of all the drinks catching up with him.
+
+Jothro: “There is something important I have to do tonight. I cannot share any details with you yet, so I just need you to trust me.”
+
+Mav pats Jothro on the back.
+
+Mav: “Sure, anything for you. You’re like my brother; did you know that?”
+
+Jothro: “Thanks, I appreciate that. Did you notice how angry Ostor got after the we’ve won?”
+
+Mav: “Yeah, bastard got what is coming for him.”
+
+Jothro: “Exactly! How about you go and make him even angrier?”
+
+Mav’s eyes light up.
+
+Jothro: “Provoke him; rub the defeat into his face. I think he’s pretty close to snapping and then fists are going to fly.”
+
+Mav: “Ohhh, you’re tempting me. I’ve been meaning to *thank* him for the two years he has been torturing me during Space Military Tactics.”
+
+Jothro: “Yes, that’s exactly what I need. When the dinner starts, wait for some time to pass and then lay in him. I need a big enough distraction for the Technopaths to leave the dinner chamber.”
+
+Mave takes a couple of seconds to think but then he enthusiastically nods.
+
+Mav: “I’ve got you. But you owe me an explanation afterwards; even if I’m doing this out of pleasure.”
+
+Jothro: “Definitely. Just make sure to hold your punches until he attacks you. I don’t want you getting into trouble.”
+
+[[Continue|Get rid of guards DONE]]
 ]
 
-(else-if: $drunkenness is 1)
+(else-if: $drunkenness is 2)
 [
-Jothro: &quot;No thanks, I already had one tonight.&quot;
+He appears a bit tipsy from the drinks he has had. Jothro also feels some of the effects of all the drinks catching up with him.
+
+Jothro: “There is something important I have to do tonight. I cannot share any details with you yet, so I just need you to trust me.”
+
+Mav looks at Jothro with concern in his eyes.
+
+Mav: “Is everything alright?”
+
+Jothro: “Yes, yes. I just need you to help me out and I’ll explain everything tomorrow, I swear.”
+
+Mav: “Alright, what is it?”
+
+Jothro: “Did you notice how angry Ostor got after the we’ve won?”
+
+Mav: “Yeah, bastard got what is coming for him.”
+
+Jothro: “I know this will sound crazy but how about you go and make him even angrier?”
+
+Mav: “I’m listening…”
+
+Jothro: “Provoke him; rub the defeat into his face. I think he’s pretty close to snapping and then fists are going to fly.”
+
+Mav: “Not gonna lie; I’ve been meaning to *thank* him for the two years he has been torturing me during Space Military Tactics.”
+
+Jothro: “Yes, that’s exactly what I need. When the dinner starts, wait for some time to pass and then lay in him. I need a big enough distraction for the Technopaths to leave the dinner chamber.”
+
+Mave takes a couple of seconds to think but hesitantly nods.
+
+Mav: “Alright, I can do that. That better be a hell of an explanation you’re gonna give me tomorrow.”
+
+Jothro: “Definitely. Just make sure to hold your punches until he attacks you. I don’t want you getting into trouble.”
+
+[[Continue|Get rid of guards DONE]]
 ]
 
 (else:)
 [
-Jothro: &quot;Not really in the mood for drinking today.&quot;
+Jothro: “There is something important I have to do tonight. I cannot share any details with you yet, so I just need you to trust me.”
+
+Mav looks at Jothro with concern in his eyes.
+
+Mav: “Is everything alright?”
+
+Jothro: “Yes, yes. I just need you to help me out and I’ll explain everything tomorrow, I swear.”
+
+Mav: “Alright, what is it?”
+
+Jothro: “Did you notice how angry Ostor got after the we’ve won?”
+
+Mav: “Yeah, can’t say I’m surprised. He’s always been hotheaded.”
+
+Jothro: “I know this will sound crazy but how about you go and make him even angrier?”
+
+Mav: “You’re right, that sounds crazy. What are you imagining?”
+
+Jothro: “Provoke him; rub the defeat into his face. I think he’s pretty close to snapping and then fists are going to fly.”
+
+Mav: “Listen, I hate the guy as much as anyone here, but I could get into serious trouble for that.”
+
+Jothro: “Not if he attacks you first, then you would just be defending yourself. When the dinner starts, wait for some time to pass and then lay in him. I need a big enough distraction for the Technopaths to leave the dinner chamber.”
+
+Mave takes a couple of seconds to think but hesitantly nods.
+
+Mav: “Alright, I’ll do it. I don’t know what the hell you are trying to pull off, but you owe me more than an explanation tomorrow.
+
+Jothro: “Definitely. Just make sure to hold your punches until he attacks you. I don’t want you getting into trouble.”
+
+[[Continue|Get rid of guards DONE]]
 ]
-
-[[Start playing the card game]]</tw-passagedata><tw-passagedata pid="27" name="Start playing the card game" tags="" position="2250,1100" size="100,100">A few games pass
-
-Luen is talking with someone else
-
-One of Jothro&#39;s friends is really drunk now
-
-[[Approach him and ask for help|Prepare distraction]]</tw-passagedata><tw-passagedata pid="28" name="Prepare distraction" tags="" position="2400,1100" size="100,100">Ask one of your friends at the table to start a fight in the Grand Hall during the dinner; appeal on him to trust you
-
-(if: $drunkenness is &gt;=2)
+(set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="27" name="Get rid of guards DONE" tags="" position="2925,1100" size="100,100">(if: $camerasHacked is false and $seatingChanged is false)
 [
-Because he&#39;s drunk, it&#39;s gonna be really easy to persuade him
-]
+Mav squeezes Jothro’s shoulder and goes back to Vanda and Luen. Jothro looks over to the digital clock and freezes.
 
-(else:)
-[
-It&#39;s gonna take a little bit of persuading, but eventually he will crack
-]
+*Shit… Fifteen minutes left. The match took longer than I expected.*
 
-[[Continue|End of card game]]
-(set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="29" name="End of card game" tags="" position="2550,1100" size="100,100">(if: $camerasHacked is false and $seatingChanged is false)
-[
+He quickly looks over to where he saw the butler last time and to his relief, the Academis is still conversing with the kitchen staff. The security room also still looks to be guarded by just one Technopath.
+
+*I need to get closer to the butler and hack his datapad to change the seating plan. But then again, I could also sabotage the cameras if I get myself into that security room. I have to choose; I only have time to do one of these.*
+
 [[Go disable the cameras|Sabotage the cameras]]
 [[Seek out the butler|Change the seating order]]
 ]
@@ -610,75 +981,84 @@ It&#39;s gonna take a little bit of persuading, but eventually he will crack
 (else:)
 [
 A bell rings and the top students are called to join the Admiral for the [[dinner|Dinner starts]]
-]</tw-passagedata><tw-passagedata pid="30" name="Start walking with Luen" tags="" position="1600,875" size="100,100">Dialogue with Luen |option&gt;[clicking on the option]
+]</tw-passagedata><tw-passagedata pid="28" name="Start walking with Luen" tags="" position="1175,875" size="100,100">Couple of minutes pass by and no one says anything. Jothro waits for Luen to say something, but she just continues the stroll while admiring the gala with childlike eyes.
 
-(click:?option)
+[|CH1&gt;[|A&gt;[&quot;Did you want to talk?&quot;]
+|B&gt;[&quot;You look lovely.&quot;]
+|C&gt;[&quot;Are you looking towards the dinner?&quot;]]]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
 [
-text
+Jothro: “Did you want to talk about something?”
 
-[|CH1&gt;[|A&gt;[&quot;choice A&quot;]
-|B&gt;[&quot;choice B&quot;]
-|C&gt;[&quot;choice C&quot;]]]
+Luen: “Hmm? Oh, yes, sorry I got lost in thoughts. The gala looks amazing, doesn’t it?”
+
+Jothro: “It does. I’m glad it lived up to the hype of the previous graduates.”
+
+Luen: “I hope we get to see Professor Tula making out with some of the graduates like she apparently did last year.”
+
+Jothro: “I think she learned her lesson. Look, she’s here with her wife.”
+
+They both look towards Professor Tula as she is introducing her wife to some of the other professors.
+
+Luen: “How did you enjoy the vacation with your uncle?”
+
+(display: &quot;Luen convo; uncle questions&quot;)
 ]
+	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: “You look lovely, by the way.”
 
-(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
-(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
-(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)[]
+Luen: “Hmm? Oh, thank you. You also look amazing! Did your uncle get you the dress?”
 
-[[Continue walking|Luen convo cont&#39;d]]</tw-passagedata><tw-passagedata pid="31" name="Await the Admiral&#39;s arrival" tags="" position="3350,1725" size="100,100">The Admiral arrives
+Luen touches Jothro’s arm sleeve admiring the expensive fabric it is made of.
+
+Jothro: “Yeah, supposedly it’s a gift for graduating, but I think he mainly doesn’t want me to embarrass him.”
+
+Luen: “I can sympathize with that. I was half expecting you will turn up here in your pajamas.”
+
+Jothro: “I did consider it.”
+
+They both chuckle wholeheartedly.
+
+Luen: “How did you enjoy the vacation with him?”
+
+(display: &quot;Luen convo; uncle questions&quot;)
+]
+	(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: “Are you looking towards the dinner with the Admiral?”
+
+Luen: “Hmm? Oh, yes, definitely. It’s meant to be a very lovely time.
+
+Jothro: “You know, I already met the Admiral.”
+
+Luen: “You… did? How is she?”
+
+Jothro: &quot;Not what I expected from what they have been teaching us about her here. And here husband is very… out there, let’s say.”
+
+Luen: “That does seem to fit. Well, I’m looking forward to talking with her.”
+
+Couple of heartbeats pass by as they continue their stroll.
+
+Luen: “How did you enjoy the vacation with your uncle?”
+
+(display: &quot;Luen convo; uncle questions&quot;)
+]</tw-passagedata><tw-passagedata pid="29" name="Await the Admiral&#39;s arrival" tags="" position="3350,1725" size="100,100">The Admiral arrives
 
 The Academis introduces here before leaving
 
 The Admiral makes a toast
 
-[[Continue|First course]]</tw-passagedata><tw-passagedata pid="32" name="Seated" tags="" position="3050,1100" size="100,100">Jothro takes his seat and looks around as more students start pouring in.
+[[Continue|First course]]</tw-passagedata><tw-passagedata pid="30" name="Seated" tags="" position="3425,1100" size="100,100">Jothro takes his seat and looks around as more students start pouring in.
 
-[[Await the Admiral&#39;s arrival]]</tw-passagedata><tw-passagedata pid="33" name="Take the open seat next to the Admiral" tags="" position="2900,850" size="100,100">Jothro starts sitting down when the butler puts an arm on his shoulder.
+[[Await the Admiral&#39;s arrival]]</tw-passagedata><tw-passagedata pid="31" name="Proceed to sit down" tags="" position="3275,1100" size="100,100">
 
-&quot;Butler: And what are you trying to do, Graduate?&quot;
-
-	[
-|CH1&gt;[|A&gt;[&quot;Sorry, this is not my...?&quot;]
-|B&gt;[&quot;I thought...&quot;]]
-	]
-]
-
-	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
-[
-&quot;Butler: You are seated at the other end.&quot;
-[[Move|Seated]]
-]
-	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
-[
-&quot;Butler: You are seated at the other end.&quot;
-[[Move|Seated]]
-]</tw-passagedata><tw-passagedata pid="34" name="Take your assigned seat" tags="" position="2900,975" size="100,100">Jothro takes his seat and looks around as more students start pouring in.
-
-[[Await the Admiral&#39;s arrival]]</tw-passagedata><tw-passagedata pid="35" name="Proceed to sit down" tags="" position="2900,1100" size="100,100">Dufry: &quot;Nice try, Pentry&quot;
-
-Dufry puts his hand on Jothro&#39;s collar assetively, but before he is able to do anything, the Academis appears behind them.
-
-Academis: Is there an issue, gentelmen?
-
-Dufry scoffs at the Academis&#39; question.
-
-Dufry: &quot;Yes, there is an issue. The seating is supposed to be according to the grade point average we graduated with. This place is rightfully mine.&quot;
-
-Academis: &quot;Indeed, but the Principalis can overrule this. I don&#39;t know the meaning behind this decision, but as the Principalis is not here tonight, all we can do is follow the seating plan.&quot;
-
-Dufry: &quot;But...&quot;
-
-The Academis points at the other end of the table, ten seats away from us.
-
-Academis: &quot;Your seat is over there, Graduate Nupot.&quot;
-
-Dufry is bewildred, but does not object further. He slowly moves to the other end of the dinning chamber and sits down while shooting half-chocked curses at Jothro and the Academis.
-
-[[Continue|Seated]]</tw-passagedata><tw-passagedata pid="36" name="First course" tags="" position="3500,1725" size="100,100">Some small introductory conversation happening
+[[Continue|Seated]]</tw-passagedata><tw-passagedata pid="32" name="First course" tags="" position="3500,1725" size="100,100">Some small introductory conversation happening
 
 Set up that the Admiral likes to be challenged
 
-[[Continue|Second course]]</tw-passagedata><tw-passagedata pid="37" name="Second course" tags="" position="3650,1725" size="100,100">The Admiral starts talking about Tamor
+[[Continue|Second course]]</tw-passagedata><tw-passagedata pid="33" name="Second course" tags="" position="3650,1725" size="100,100">The Admiral starts talking about Tamor
 
 (if: $drunkenness is 3)
 [
@@ -696,32 +1076,32 @@ Set up that the Admiral likes to be challenged
 [[Challenge the Admiral]]
 [[Carefully discuss]]
 [[Don&#39;t participate in the conversation|Don&#39;t participate]]
-]</tw-passagedata><tw-passagedata pid="38" name="Challenge the Admiral" tags="" position="3800,1575" size="100,100">Call out her views and opinions on Tamor; Dufry will be defending the Admiral
+]</tw-passagedata><tw-passagedata pid="34" name="Challenge the Admiral" tags="" position="3800,1575" size="100,100">Call out her views and opinions on Tamor; Dufry will be defending the Admiral
 
-[[Be a bit more aggressive]]</tw-passagedata><tw-passagedata pid="39" name="Carefully discuss" tags="" position="3800,1725" size="100,100">Join the discussion between the Admiral and Dufry but be careful about which words you choose
+[[Be a bit more aggressive]]</tw-passagedata><tw-passagedata pid="35" name="Carefully discuss" tags="" position="3800,1725" size="100,100">Join the discussion between the Admiral and Dufry but be careful about which words you choose
 
-[[Casual conversation continues]]</tw-passagedata><tw-passagedata pid="40" name="Don&#39;t participate" tags="" position="3800,1875" size="100,100">The Admiral will start discussing Tamor with Dufry, who supports her views and what she had done there.
+[[Casual conversation continues]]</tw-passagedata><tw-passagedata pid="36" name="Don&#39;t participate" tags="" position="3800,1875" size="100,100">The Admiral will start discussing Tamor with Dufry, who supports her views and what she had done there.
 
-[[Listen as the Admiral disuses Tamor]]</tw-passagedata><tw-passagedata pid="41" name="Be a bit more aggressive" tags="" position="3950,1575" size="100,100">First she will take it as a friendly conversation, but slowly she will become aggitated by Jothro&#39;s comments
-
-[[Fully provoke her]]
-[[Object her views but do not provoke her further]]
-[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="42" name="Fully provoke her" tags="" position="4250,1575" size="100,100">The conversation will get really heated to the point where the Admiral will warn Jothro to mind his place and who he is talking with; Dufry will no longer say anything.
-
-[[Continue|The distraction triggers]]
-(set: $dinnerDialogue to &quot;agressive&quot;)</tw-passagedata><tw-passagedata pid="43" name="Casual conversation continues" tags="" position="3950,1725" size="100,100">[[Fully provoke her]]
-[[Object her views but do not provoke her further]]
-[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="44" name="Object her views but do not provoke her further" tags="" position="4250,1725" size="100,100">The Admiral and Dufry are clearly aggitated with Jothro but the Admiral respects his position on the matter
-
-[[Continue|The distraction triggers]]
-(set: $dinnerDialogue to &quot;careful&quot;)</tw-passagedata><tw-passagedata pid="45" name="Listen as the Admiral disuses Tamor" tags="" position="3950,1875" size="100,100">The Admiral will start to share more extremist views
+[[Listen as the Admiral disuses Tamor]]</tw-passagedata><tw-passagedata pid="37" name="Be a bit more aggressive" tags="" position="3950,1575" size="100,100">First she will take it as a friendly conversation, but slowly she will become aggitated by Jothro&#39;s comments
 
 [[Fully provoke her]]
 [[Object her views but do not provoke her further]]
-[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="46" name="Swallow your pride and don’t intervene" tags="" position="4250,1875" size="100,100">Jothro doesn&#39;t intervene further in the conversation and the Admiral finishes the conversation with Dufry.
+[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="38" name="Fully provoke her" tags="" position="4250,1575" size="100,100">The conversation will get really heated to the point where the Admiral will warn Jothro to mind his place and who he is talking with; Dufry will no longer say anything.
 
 [[Continue|The distraction triggers]]
-(set: $dinnerDialogue to &quot;passive&quot;)</tw-passagedata><tw-passagedata pid="47" name="The distraction triggers" tags="" position="4450,1725" size="100,100">A fight will start in the Grand Hall; the Academis will run in to annonce what is happening; the Admiral will send her Technopaths to help resolve the issue
+(set: $dinnerDialogue to &quot;agressive&quot;)</tw-passagedata><tw-passagedata pid="39" name="Casual conversation continues" tags="" position="3950,1725" size="100,100">[[Fully provoke her]]
+[[Object her views but do not provoke her further]]
+[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="40" name="Object her views but do not provoke her further" tags="" position="4250,1725" size="100,100">The Admiral and Dufry are clearly aggitated with Jothro but the Admiral respects his position on the matter
+
+[[Continue|The distraction triggers]]
+(set: $dinnerDialogue to &quot;careful&quot;)</tw-passagedata><tw-passagedata pid="41" name="Listen as the Admiral disuses Tamor" tags="" position="3950,1875" size="100,100">The Admiral will start to share more extremist views
+
+[[Fully provoke her]]
+[[Object her views but do not provoke her further]]
+[[Swallow your pride and don’t intervene]]</tw-passagedata><tw-passagedata pid="42" name="Swallow your pride and don’t intervene" tags="" position="4250,1875" size="100,100">Jothro doesn&#39;t intervene further in the conversation and the Admiral finishes the conversation with Dufry.
+
+[[Continue|The distraction triggers]]
+(set: $dinnerDialogue to &quot;passive&quot;)</tw-passagedata><tw-passagedata pid="43" name="The distraction triggers" tags="" position="4450,1725" size="100,100">A fight will start in the Grand Hall; the Academis will run in to annonce what is happening; the Admiral will send her Technopaths to help resolve the issue
 
 (if: $camerasHacked is true)
 [
@@ -736,21 +1116,21 @@ Set up that the Admiral likes to be challenged
 !Problem with camerasHacked or seatingChanged variables!
 
 [[Continue|Plant the upload device]]
-]</tw-passagedata><tw-passagedata pid="48" name="Start controlling the cameras" tags="" position="4600,1650" size="100,100">Point all cameras at the Admiral&#39;s datapad on the table to act as relays for uploading the incriminating info
+]</tw-passagedata><tw-passagedata pid="44" name="Start controlling the cameras" tags="" position="4600,1650" size="100,100">Point all cameras at the Admiral&#39;s datapad on the table to act as relays for uploading the incriminating info
 
-[[Continue|The Admiral reveals Luen is her adopted daughter]]</tw-passagedata><tw-passagedata pid="49" name="Plant the upload device" tags="" position="4600,1800" size="100,100">Plant an upload device under the part of the table where the Admiral&#39;s datapad is lying
+[[Continue|The Admiral reveals Luen is her adopted daughter]]</tw-passagedata><tw-passagedata pid="45" name="Plant the upload device" tags="" position="4600,1800" size="100,100">Plant an upload device under the part of the table where the Admiral&#39;s datapad is lying
 
-[[Continue|The Admiral reveals Luen is her adopted daughter]]</tw-passagedata><tw-passagedata pid="50" name="The Admiral reveals Luen is her adopted daughter" tags="" position="4750,1725" size="100,100">The discussion about Tamor leads to the Admiral revealing Luen is her adoped daughter - the Admiral had to do a similar dissolution on her planet and that&#39;s how they met each other.
+[[Continue|The Admiral reveals Luen is her adopted daughter]]</tw-passagedata><tw-passagedata pid="46" name="The Admiral reveals Luen is her adopted daughter" tags="" position="4750,1725" size="100,100">The discussion about Tamor leads to the Admiral revealing Luen is her adoped daughter - the Admiral had to do a similar dissolution on her planet and that&#39;s how they met each other.
 
 Luen will be angry since she did not wanted to be treated differently at the Academy just because she is the Admiral&#39;s daughter.
 
-[[Process the information|Third course]]</tw-passagedata><tw-passagedata pid="51" name="Third course" tags="" position="4900,1725" size="100,100">Jothro tries to process the information while still making sure that his mission will get completed
+[[Process the information|Third course]]</tw-passagedata><tw-passagedata pid="47" name="Third course" tags="" position="4900,1725" size="100,100">Jothro tries to process the information while still making sure that his mission will get completed
 
 There will be hints of this split - the upload will get momentarirly interupted because he won&#39;t notice the Admiral moved the datapad OR Jothro will almost forget to take the upload device with him when leaving
 
-[[Dinner ends]]</tw-passagedata><tw-passagedata pid="52" name="Dinner ends" tags="" position="5050,1725" size="100,100">When the dinner ends, Luen will whisper to Jothro to meet her on the observation deck as they are walking out
+[[Dinner ends]]</tw-passagedata><tw-passagedata pid="48" name="Dinner ends" tags="" position="5050,1725" size="100,100">When the dinner ends, Luen will whisper to Jothro to meet her on the observation deck as they are walking out
 
-[[Go there|Observation deck]]</tw-passagedata><tw-passagedata pid="53" name="Talking about the dinner" tags="" position="5350,1725" size="100,100">Different conversations will happen based on how Jothro behaved during the dinner
+[[Go there|Observation deck]]</tw-passagedata><tw-passagedata pid="49" name="Talking about the dinner" tags="" position="5350,1725" size="100,100">Different conversations will happen based on how Jothro behaved during the dinner
 
 (if: $dinnerDialogue is &quot;agressive&quot;)
 [
@@ -773,35 +1153,35 @@ Problem with dinnerDialogue variable
 ]
 
 [[Reveal Jothro’s history with the Admiral]]
-[[Be careful and don’t mention Jothro’s history with the Admiral]]</tw-passagedata><tw-passagedata pid="54" name="Observation deck" tags="" position="5200,1725" size="100,100">Luen explains her relation to the Admiral
+[[Be careful and don’t mention Jothro’s history with the Admiral]]</tw-passagedata><tw-passagedata pid="50" name="Observation deck" tags="" position="5200,1725" size="100,100">Luen explains her relation to the Admiral
 
 She will hint that she hates and loves her at the same time
 
-[[Talking about the dinner]]</tw-passagedata><tw-passagedata pid="55" name="Reveal Jothro’s history with the Admiral" tags="" position="5500,1550" size="100,100">[[Reveal the whole truth]]
-[[Don&#39;t share more]]</tw-passagedata><tw-passagedata pid="56" name="Be careful and don’t mention Jothro’s history with the Admiral" tags="" position="5500,1800" size="100,100">Luen will urge Jothro to trust her
+[[Talking about the dinner]]</tw-passagedata><tw-passagedata pid="51" name="Reveal Jothro’s history with the Admiral" tags="" position="5500,1550" size="100,100">[[Reveal the whole truth]]
+[[Don&#39;t share more]]</tw-passagedata><tw-passagedata pid="52" name="Be careful and don’t mention Jothro’s history with the Admiral" tags="" position="5500,1800" size="100,100">Luen will urge Jothro to trust her
 
 [[Reveal Jothro’s history with the Admiral]]
-[[Say that everything is fine|Stay together and silent while watching the stars]]</tw-passagedata><tw-passagedata pid="57" name="Stay together and silent while watching the stars" tags="" position="5800,1800" size="100,100">Stay together and silent while watching the stars</tw-passagedata><tw-passagedata pid="58" name="Reveal the whole truth" tags="" position="5650,1550" size="100,100">Go deep and reveal why you’re really at the Academy
+[[Say that everything is fine|Stay together and silent while watching the stars]]</tw-passagedata><tw-passagedata pid="53" name="Stay together and silent while watching the stars" tags="" position="5800,1800" size="100,100">Stay together and silent while watching the stars</tw-passagedata><tw-passagedata pid="54" name="Reveal the whole truth" tags="" position="5650,1550" size="100,100">Go deep and reveal why you’re really at the Academy
 
-[[Luen leaves]]</tw-passagedata><tw-passagedata pid="59" name="Luen leaves" tags="" position="5800,1550" size="100,100">Luen will leave since she needs to be alone to process what Jothro just revealed</tw-passagedata><tw-passagedata pid="60" name="Don&#39;t share more" tags="" position="5650,1675" size="100,100">[[Jothro leaves]]
-[[Stay together and silent while watching the stars]] </tw-passagedata><tw-passagedata pid="61" name="Jothro leaves" tags="" position="5800,1675" size="100,100">Jothro will leave because he needs some time alone to think</tw-passagedata><tw-passagedata pid="62" name="Title" tags="" position="50,50" size="100,100">The Dissolution of Tamor
+[[Luen leaves]]</tw-passagedata><tw-passagedata pid="55" name="Luen leaves" tags="" position="5800,1550" size="100,100">Luen will leave since she needs to be alone to process what Jothro just revealed</tw-passagedata><tw-passagedata pid="56" name="Don&#39;t share more" tags="" position="5650,1675" size="100,100">[[Jothro leaves]]
+[[Stay together and silent while watching the stars]] </tw-passagedata><tw-passagedata pid="57" name="Jothro leaves" tags="" position="5800,1675" size="100,100">Jothro will leave because he needs some time alone to think</tw-passagedata><tw-passagedata pid="58" name="Title" tags="" position="50,50" size="100,100">The Dissolution of Tamor
 
-[[Start|In Front of Grand Hall]] </tw-passagedata><tw-passagedata pid="63" name="Look around" tags="" position="525,200" size="100,100">The bar is open and booming with excited graduates. The drinks they hold in their hands look amazing and premium. Jothro has heard that the $academyShort is not afraid to spend and invites some of the best bartenders in the Dukedom for every graduation.
+[[Start|In Front of Grand Hall]] </tw-passagedata><tw-passagedata pid="59" name="Look around" tags="" position="525,200" size="100,100">The bar is open and booming with excited graduates. The drinks they hold in their hands look amazing and premium. Jothro has heard that the $academyShort is not afraid to spend and invites some of the best bartenders in the Dukedom for every graduation.
 [[Go have a drink]]
 
 There is a commotion in one of the corners of the hall. Both teachers and graduates are boisterous laughing and looking at someone or something that is obstructed by one of the columns.
 [[Investigate the commotion|Go look for the Admiral]]
 
 In another corner, $mainCharacter spots his friends discussing something with plentiful drinks in their hands. It looks like, they are in disagreement about something.
-[[Check in with friends|Go look for some of your friends]]</tw-passagedata><tw-passagedata pid="64" name="Continue after drink" tags="" position="1000,50" size="100,100">Jothro watches as the Admiral joins the commotion and adroitly changes the subject to something less intimate. Jothro almost forgets he has a glass in his hand before downing it in one go.
+[[Check in with friends|Go look for some of your friends]]</tw-passagedata><tw-passagedata pid="60" name="Continue after drink" tags="" position="1000,50" size="100,100">Jothro watches as the Admiral joins the commotion and adroitly changes the subject to something less intimate. Jothro almost forgets he has a glass in his hand before downing it in one go.
 
 *That is the Admiral? I’ve studied every report the Anarchs had on her ever since I joined them, but I never imaged her like… well like this.*
 
 The Admiral managed to somehow drag her husband from the grasps of the entertained crowd, and they started slowly walking around the room.
 [[Go and eavesdrop on the Admiral|Admiral and her husband conversation]]
 
-Jothro spots his friend again from the corner of his vision, shooting him a questioning gaze and eager invites to join them.
-[[Check in with friends|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="65" name="Continue after looking for Admiral" tags="" position="850,200" size="100,100">Jothro watches as the Admiral joins the commotion and adroitly changes the subject to something less intimate.
+Jothro spots his friend Mav again from the corner of his vision, shooting him a questioning gaze and eager invites to join him and Vanda.
+[[Check in with friends|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="61" name="Continue after meeting the Admiral" tags="" position="850,275" size="100,100">Jothro watches as the Admiral joins the commotion and adroitly changes the subject to something less intimate.
 
 *That is the Admiral? I’ve studied every report the Anarchs had on her ever since I joined them, but I never imaged her like… well like this.*
 
@@ -809,7 +1189,7 @@ The Admiral managed to somehow drag her husband from the grasps of the entertain
 [[Go and eavesdrop on the Admiral|Admiral and her husband conversation]]
 
 Jothro’s friends are still arguing but it’s clearly in good spirits and over something undoubtably ridiculous. One of them spots Jothro watching and enthusiastically invites him over.
-[[Check in with friends|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="66" name="Admiral and her husband conversation cont&#39;d" tags="" position="1150,200" size="100,100">Berkem: “Are you leaving for another cleansing after tonight?”
+[[Check in with friends|Jothro&#39;s friends at the reception]]</tw-passagedata><tw-passagedata pid="62" name="Admiral and her husband conversation cont&#39;d" tags="" position="1325,200" size="100,100">Berkem: “Are you leaving for another dissolution after tonight?”
 
 Admiral: “I’m afraid so, my love. I know it hasn’t been long since the last one, but the House has decided to not delay any further efforts in this quadrant. The Anarchs have been pestering us more and more recently.”
 
@@ -825,8 +1205,457 @@ Jothro is now even closer to his friends and one of them notices him.
 
 Mav: &quot;Jothro! Where have you been all night? Come and join us.&quot;
 
-[[Continue eavesdropping the Admiral|Fake out]]
-[[Join Mav|Fake out]]</tw-passagedata><tw-passagedata pid="67" name="Fake out" tags="" position="1525,175" size="100,100"></tw-passagedata></tw-storydata>
+[[Join Mav|Luen arrives]]</tw-passagedata><tw-passagedata pid="63" name="Luen arrives" tags="" position="1700,350" size="100,100">&lt;!--ADMIRAL PATH--&gt;
+(if: $receptionAdmiralPath is true)
+[
+(display: &quot;Luen arrives; her description&quot;)
+
+[|CH1&gt;[|A&gt;[&quot;Hello to you too.&quot;]
+|B&gt;[&quot;I was just about to go see Mav and Vanda.&quot;]
+|C&gt;[&quot;What’s the matter?&quot;]]]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;Hello to you too, Luen.&quot;
+
+Luen: &quot;I know, I&#39;m sorry. I&#39;m just really excited about today. We&#39;re Prime Graduates! Can you believe that?&quot;
+
+Jothro cannot help but smile at her enthusiasm. Mav emerges from the crowd and looks questioningly at both.
+
+(display: &quot;Luen arrives; CH1 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+
+	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;I was just about to go see Mav and Vanda.&quot;
+
+Luen looks over to where Jothro is pointing. Mav emerges from the crowd and looks questioningly at both.
+
+(display: &quot;Luen arrives; CH1 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+
+	(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;What&#39;s the matter?&quot;
+
+Luen: &quot;Nothing&#39;s the matter. I&#39;m just really excited about today. We&#39;re Prime Graduates! Can you believe that?&quot;
+
+Jothro cannot help but smile at her enthusiasm. Mav emerges from the crowd and looks questioningly at both.
+
+(display: &quot;Luen arrives; CH1 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+]
+
+&lt;!--FRIENDS PATH--&gt;
+(else-if: $receptionFriendsPath is true)
+[
+(display: &quot;Luen arrives; her description&quot;)
+
+[|CH2&gt;[|A&gt;[&quot;Hello to you too.&quot;]
+|B&gt;[&quot;And where have you been?&quot;]
+|C&gt;[&quot;What’s the matter?&quot;]]]
+
+	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;Hello to you too, Luen.&quot;
+
+Luen: &quot;I know, I&#39;m sorry. I&#39;m just really excited about today. We&#39;re Prime Graduates! Can you believe that?&quot;
+
+Jothro cannot help but smile at her enthusiasm as he&#39;s standing up. Mav and Vanda put on confused faces.
+
+(display: &quot;Luen arrives; CH2 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;And where have you been?&quot;
+
+Luen: &quot;Getting ready. Can&#39;t you tell?!&quot;
+
+Luen points at her immaculate dress. Jothro smiles and starts stading up as Mav and Vanda put on confused faces.
+
+(display: &quot;Luen arrives; CH2 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+	(click:?C)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;What&#39;s the matter?&quot;
+
+Luen: &quot;Nothing&#39;s the matter. I&#39;m just really excited about today. We&#39;re Prime Graduates! Can you believe that?&quot;
+
+Jothro cannot help but smile at her enthusiasm as he&#39;s standing up. Mav emerges from the crowd and looks questioningly at both.
+(display: &quot;Luen arrives; CH2 shared answer&quot;)
+
+[[Start walking with Luen]]
+]
+]
+
+(else:)
+[
+ERROR
+]</tw-passagedata><tw-passagedata pid="64" name="Luen arrives; CH1 shared answer" tags="" position="1950,425" size="100,100">Mav: “Where have you two been all night! Come and join us! We have to celebrate!”
+
+Luen: “Not yet. Jothro and I have a lot of catching up to do. We’ll be there when the cards tournament starts.”
+
+Mav: “But we have to discuss strategy!”
+
+Luen looks at Mav with a spark in her eye.
+
+Luen: “We’ve practiced our strategies hundreds of times. We’ll be fine. Besides, I never lose at cards.”
+
+Jothro is forcefully dragged under the columns that hold the balconies above and Luen starts a sluggish stroll around the hall while interlocking her arm with Jothro’s arm.&lt;!--HAVE TO REWRITE THIS--&gt;</tw-passagedata><tw-passagedata pid="65" name="Luen arrives; her description" tags="" position="1825,375" size="100,100">Luen: “There you are!”
+
+Luen jumps Jothro out of nowhere. She appears very exhilarated. She is wearing a dress made of pure white silk laced with shiny garnet lines, and her black and white hair hangs perfectly straight down to her exposed shoulders.
+
+Luen: “I was looking for you since I got here. Come, let’s walk.”</tw-passagedata><tw-passagedata pid="66" name="Luen arrives; CH2 shared answer" tags="" position="2075,475" size="100,100">Mav: “But what about the cards tournament?!”
+
+Luen: “Jothro and I have a lot of catching up to do. We’ll be there when the cards tournament starts.”
+
+Mav: “But we have to discuss strategy!”
+
+Luen looks at Mav with a spark in her eye.
+
+Luen: “We’ve practiced our strategies hundreds of times. We’ll be fine. Besides, I never lose at cards.”
+
+Jothro is forcefully dragged under the columns that hold the balconies above and Luen starts a sluggish stroll around the hall while interlocking her arm with Jothro’s arm.</tw-passagedata><tw-passagedata pid="67" name="Luen convo; uncle questions" tags="" position="1300,925" size="100,100">(link: &quot;“It was great.”&quot;)[
+  (set: $uncleQuestion to &quot;great&quot;)
+  (go-to: &quot;Luen convo about uncle&quot;)
+]
+(link: &quot;“Very refreshing.”&quot;)[
+  (set: $uncleQuestion to &quot;refreshing&quot;)
+  (go-to: &quot;Luen convo about uncle&quot;)
+]
+(link: &quot;“Eventful, to say the least”&quot;)[
+  (set: $uncleQuestion to &quot;eventful&quot;)
+  (go-to: &quot;Luen convo about uncle&quot;)
+]</tw-passagedata><tw-passagedata pid="68" name="Assessing the situation" tags="" position="1550,1025" size="100,100">They continue their stroll and share what they both have done over the post exam break. As they are almost about to complete their round around the hall, Jothro notices the Academis talking with one of the kitchen staff. Not far from them stands a Technopath guarding what looks to be a security room that controls cameras in the Grand Hall.
+
+*I have to hack the butler&#39;s datapad to change the seating plan, so I’m seated closer to the Admiral. However, the cameras in the dinner chamber will also prove troublesome.*
+
+Jothro checks the big digital clock at the end of the hall.
+
+*Forty-five minutes left until the dinner takes place. Damn, I have to rush if I want to deal with both.*
+
+Luen: “Hey, are you listening?”
+
+[|CH1&gt;[|A&gt;[&quot;Yeah?&quot;]
+|B&gt;[&quot;Absolutely.&quot;]
+|C&gt;[&quot;What did you say?&quot;]]]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;Yeah? What&#39;s up?&quot;
+
+(display: &quot;Assessing the situation; Luen invites Jothro&quot;)
+]
+	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;Absolutely, I am.&quot;
+
+(display: &quot;Assessing the situation; Luen invites Jothro&quot;)
+]
+	(click:?C)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+Jothro: &quot;What did you say?&quot;
+
+(display: &quot;Assessing the situation; Luen invites Jothro&quot;)
+]</tw-passagedata><tw-passagedata pid="69" name="Assessing the situation; Luen invites Jothro" tags="" position="1675,1075" size="100,100">Luen smirks a bit at Jothro&#39;s remark.
+
+Luen: &quot;I said shall we return back to Mav and Vanda to go and play cards? They need us to win.&quot;
+
+*I could join them now to talk with Mav about dealing with the Admiral&#39;s Technopaths and then handle the seating plan and the cameras. But do I have the time to do all three?*
+
+[[Infiltrate the security room|Sabotage the cameras]]
+[[Join Luen for a few rounds of cards|Get rid of guards]]
+[[Seek out the butler|Change the seating order]]</tw-passagedata><tw-passagedata pid="70" name="Dinner Starts - with seating dilemma" tags="" position="2850,300" size="100,100">Enter the dinner chamber; not many people there so far
+
+(if: $camerasHacked is true)
+[
+Check that the cameras are truely turned off
+
+One seat next to the Admiral&#39;s seat is still open -&gt; try and take it
+]
+
+(else-if: $seatingChanged is true)
+[
+Jothro goes to take his seat next to the Admiral, but another student (Dufry) stops him; the seat is supposed to be his since he graduated with the best point average
+
+	[
+|CH2&gt;[|A&gt;[&quot;There was a mistake mistaken.&quot;]
+|B&gt;[&quot;What are you on about?&quot;]
+|C&gt;[&quot;I&#39;ve talked with the butler&quot;]]
+    ]
+]
+
+	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: Oh yeah there was a mistake in the seating plan, sorry. You are now sitting threre at the end.&quot;
+]
+	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: What are you on about? The Principalis is the last one to decide who sits where. I guess he likes me better than you.&quot;
+]
+	(click:?C)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Jothro: I literarly just talked with the butler. I&#39;ve been assigned this seat.&quot;
+
+Proceed to sit down
+]</tw-passagedata><tw-passagedata pid="71" name="Take the open seat next to the Admiral - with seating dilemma" tags="" position="3000,175" size="100,100">Jothro starts sitting down when the butler puts an arm on his shoulder.
+
+&quot;Butler: And what are you trying to do, Graduate?&quot;
+
+	[
+|CH1&gt;[|A&gt;[&quot;Sorry, this is not my...?&quot;]
+|B&gt;[&quot;I thought...&quot;]]
+	]
+]
+
+	(click:?A)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Butler: You are seated at the other end.&quot;
+]
+	(click:?B)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)
+[
+&quot;Butler: You are seated at the other end.&quot;
+]</tw-passagedata><tw-passagedata pid="72" name="Take your assigned seat - with seating dilemma" tags="" position="3000,300" size="100,100">Jothro takes his seat and looks around as more students start pouring in.
+
+Await the Admiral&#39;s arrival</tw-passagedata><tw-passagedata pid="73" name="Proceed to sit down - with seating dilemma" tags="" position="3000,450" size="100,100">Dufry: &quot;Nice try, Pentry&quot;
+
+Dufry puts his hand on Jothro&#39;s collar assetively, but before he is able to do anything, the Academis appears behind them.
+
+Academis: Is there an issue, gentelmen?
+
+Dufry scoffs at the Academis&#39; question.
+
+Dufry: &quot;Yes, there is an issue. The seating is supposed to be according to the grade point average we graduated with. This place is rightfully mine.&quot;
+
+Academis: &quot;Indeed, but the Principalis can overrule this. I don&#39;t know the meaning behind this decision, but as the Principalis is not here tonight, all we can do is follow the seating plan.&quot;
+
+Dufry: &quot;But...&quot;
+
+The Academis points at the other end of the table, ten seats away from us.
+
+Academis: &quot;Your seat is over there, Graduate Nupot.&quot;
+
+Dufry is bewildred, but does not object further. He slowly moves to the other end of the dinning chamber and sits down while shooting half-chocked curses at Jothro and the Academis.</tw-passagedata><tw-passagedata pid="74" name="Seated - with seating dilemma" tags="" position="3150,300" size="100,100">Jothro takes his seat and looks around as more students start pouring in.</tw-passagedata><tw-passagedata pid="75" name="Get rid of the guards; previous game summary" tags="" position="2025,1150" size="100,100">Mav: &quot;The teachers are in the lead, of course. No one has beaten them so far.&quot;
+
+Vanda: &quot;No pressure at all, huh?&quot;
+
+Luen: “Guys, relax. We’ve got this. Remember the strategies we’ve been practicing and with a little bit of luck, we’ll be the first to beat them.”
+
+They continue watching and quietly discussing the moves and mistakes of the teachers.
+
+[[Observe the game]]</tw-passagedata><tw-passagedata pid="76" name="Observe the game" tags="" position="2175,1150" size="100,100">Five minutes pass by and the team of graduates loses by a margin. The teachers laugh and drink in celebration. Mav stands up and cracks his knuckles.
+
+Mav: “We’re up next. Anyone wants a drink before we begin?”
+
+[[Accept|Accepted second drink from Mav]]
+[[Refures|Refused second drink from Mav]]</tw-passagedata><tw-passagedata pid="77" name="Teacher welcomes them to the game" tags="" position="2450,1150" size="100,100">They move over to the teachers’ table and every other person around the table seems to become especially intrigued.
+
+Professor Ostor: “Ahhh, I was getting worried that you four won’t show up. I’m glad we haven’t scared you off. Come, sit!”
+
+Luen looks at everyone on her team and nods reassuringly as their sitting down.
+
+[[Nod back and start playing|Play the game]]</tw-passagedata><tw-passagedata pid="78" name="Play the game" tags="" position="2625,1125" size="100,100">It is a long game of back and forth, but half way through it is pretty obvious which team will win.
+
+Professor Ostor: “What?! How is this even possible?”
+
+Luen places down her cards which outmatch the ones Professor Ostor placed down, ending the game in a sweeping victory. She cannot help but smirk back at him.
+
+Luen: “What can I say? You’ve taught us well, professor.”
+
+Professor Ostor looks like he is going to reply, but the other professors stop him. Instead, he gets up and heads for the bar while cursing under his breath. Seeing him like this, an idea sparks in Jothro’s mind.
+
+*I can use this anger. It won’t be hard now to provoke him into doing something more drastic. I should talk with Mav.*
+
+Everyone starts storming Luen to congratulate her on the masterful play. Jothro seizes the opportunity and drags Mav to the side. 
+
+[[&quot;Can you help me out?&quot;|Prepare distraction]]
+[[&quot;I need a favor.&quot;|Prepare distraction]]
+[[&quot;Got a second?&quot;|Prepare distraction]]</tw-passagedata><tw-passagedata pid="79" name="Excuse to Luen" tags="" position="1675,1200" size="100,100">Jothro: “I’m so sorry but I have to take care of something first. Try and delay the match as long as you can.”
+
+Luen looks at Jothro in confusion as he slowly leaves her.
+
+Luen: “What’s going on? Do you need my help?”
+
+Jothro: “No, no. Just… please, this can’t wait. Delay them and I’ll be back as soon as possible, I promise.”</tw-passagedata><tw-passagedata pid="80" name="Swiping from butler&#39;s datapad" tags="" position="1950,1400" size="100,100">&lt;!-- 1. The Swipe Container --&gt;
+&lt;div id=&quot;swipe-box&quot; style=&quot;width: 400px; height: 60px; background: #333333; border: 1px solid #555; border-radius: 10px; position: relative; overflow: hidden; cursor: grab; user-select: none; touch-action: none;&quot;&gt;
+  &lt;!-- 2. The Color Fill Layer --&gt;
+  &lt;div id=&quot;swipe-fill&quot; style=&quot;width: 0px; height: 100%; background: #cb4b16; position: absolute; left: 0; top: 0; pointer-events: none;&quot;&gt;&lt;/div&gt;
+  &lt;!-- 3. The Text Layer (Fixed position) --&gt;
+  &lt;div style=&quot;position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #cb4b16; font-weight: bold; pointer-events: none; z-index: 2; text-shadow: 0 0 5px #cb4b16;&quot;&gt;Swipe to access&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 4. The Hidden Link --&gt;
+&lt;span id=&quot;hidden-swipe-link&quot; style=&quot;opacity: 0; position: absolute; pointer-events: none;&quot;&gt;
+  [[Gained access to the datapad]]
+&lt;/span&gt;
+
+&lt;!-- 5. The Script --&gt;
+&lt;script&gt;
+  let startX = 0;
+  let isDragging = false;
+  
+  const swipeBox = document.getElementById(&#39;swipe-box&#39;);
+  const swipeFill = document.getElementById(&#39;swipe-fill&#39;);
+  
+  // The box is 300px wide. We set the threshold to 250px so they have to pull it most of the way.
+  const threshold = 350; 
+
+  function updateFill(delta) {
+    // Keeps the fill width between 0 and 300 pixels so it doesn&#39;t spill out
+    let fillWidth = Math.max(0, Math.min(delta, 400));
+    swipeFill.style.width = fillWidth + &#39;px&#39;;
+  }
+
+  function resetBox() {
+    // Adds a smooth sliding animation when it snaps back to 0
+    swipeFill.style.transition = &quot;width 0.3s ease&quot;;
+    swipeFill.style.width = &quot;0px&quot;;
+  }
+
+  // --- MOUSE EVENTS (Computers) ---
+  swipeBox.addEventListener(&#39;mousedown&#39;, function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    swipeFill.style.transition = &quot;none&quot;; // Removes the animation so it instantly follows the mouse
+  });
+
+  window.addEventListener(&#39;mousemove&#39;, function(e) {
+    if (!isDragging) return;
+    let delta = e.clientX - startX;
+    updateFill(delta);
+  });
+
+  window.addEventListener(&#39;mouseup&#39;, function(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    let delta = e.clientX - startX;
+
+    if (delta &gt; threshold) {
+       // Fill the box completely before jumping to the next passage
+       swipeFill.style.width = &quot;400px&quot;;
+       let link = document.querySelector(&#39;#hidden-swipe-link tw-link&#39;);
+       // Add a tiny delay so the player sees the box fill up before the screen changes
+       if (link) setTimeout(() =&gt; link.click(), 150);
+    } else {
+       resetBox();
+    }
+  });
+&lt;/script&gt;</tw-passagedata><tw-passagedata pid="81" name="Find seating plan" tags="" position="2250,1375" size="100,100">(display: &quot;Change seat MINIGAME&quot;)
+
+(set: $seatingChanged to true)</tw-passagedata><tw-passagedata pid="82" name="Change made" tags="" position="2500,1375" size="100,100">Success</tw-passagedata><tw-passagedata pid="83" name="Change seat MINIGAME" tags="" position="2375,1425" size="100,100">{
+&lt;!-- Seating Plan Layout --&gt;
+&lt;div id=&quot;seating-plan&quot; class=&quot;seating-container&quot;&gt;
+  &lt;!-- Top Row --&gt;
+  &lt;div class=&quot;empty-space&quot;&gt;&lt;/div&gt;
+  &lt;div id=&quot;target-seat&quot; class=&quot;seat&quot;&gt;Dufry O.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Zoril T.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Kaelen M.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Bexar K.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Riven S.&lt;/div&gt;
+
+  &lt;!-- Middle Row --&gt;
+  &lt;div id=&quot;admiral-seat&quot; class=&quot;seat&quot;&gt;Admiral&lt;/div&gt;
+  &lt;div class=&quot;table-center&quot;&gt;&lt;/div&gt;
+
+  &lt;!-- Bottom Row --&gt;
+  &lt;div class=&quot;empty-space&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Tarnis V.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Soryn N.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Luen R.&lt;/div&gt;
+  &lt;div class=&quot;seat&quot;&gt;Zaris R.&lt;/div&gt;
+  &lt;div id=&quot;player-seat&quot; class=&quot;seat&quot;&gt;Jothro P.&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- Output Terminal --&gt;
+&lt;span id=&quot;hidden-swap-link&quot; style=&quot;display:none; font-family:&#39;Courier New&#39;, monospace; padding-left: 20px;&quot;&gt;
+  [[&amp;gt;|Change made]] SEATING PLAN UPDATED.
+&lt;/span&gt;
+
+&lt;!-- Logic Script --&gt;
+&lt;script&gt;
+  const playerSeat = document.getElementById(&#39;player-seat&#39;);
+  const targetSeat = document.getElementById(&#39;target-seat&#39;);
+  const seatingPlan = document.getElementById(&#39;seating-plan&#39;);
+  
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  playerSeat.addEventListener(&#39;pointerdown&#39;, function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    
+    // Disable the global screen flicker while dragging to focus the user
+    seatingPlan.style.animation = &#39;none&#39;;
+    
+    playerSeat.style.transition = &#39;none&#39;; 
+    playerSeat.setPointerCapture(e.pointerId);
+  });
+
+  playerSeat.addEventListener(&#39;pointermove&#39;, function(e) {
+    if (!isDragging) return;
+    
+    let dx = e.clientX - startX;
+    let dy = e.clientY - startY;
+    
+    playerSeat.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+
+  playerSeat.addEventListener(&#39;pointerup&#39;, function(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    playerSeat.releasePointerCapture(e.pointerId);
+    
+    // Restore the screen flicker
+    seatingPlan.style.animation = &#39;crtFlicker 0.15s infinite&#39;;
+
+    const targetBox = targetSeat.getBoundingClientRect();
+    
+    if (
+      e.clientX &gt;= targetBox.left &amp;&amp;
+      e.clientX &lt;= targetBox.right &amp;&amp;
+      e.clientY &gt;= targetBox.top &amp;&amp;
+      e.clientY &lt;= targetBox.bottom
+    ) {
+      // SUCCESS 1: Target seat becomes Jothro P.
+      targetSeat.style.animation = &#39;none&#39;; /* Stop pulsing */
+      targetSeat.style.backgroundColor = &quot;rgba(0, 255, 255, 0.4)&quot;; /* Bright fill */
+      targetSeat.style.borderColor = &quot;#ffffff&quot;;
+      targetSeat.style.boxShadow = &quot;0 0 15px #00ffff&quot;;
+      targetSeat.innerHTML = &quot;Jothro P.&quot;;
+      
+      // SUCCESS 2: Dragged seat becomes Dufry O. and slides back to bottom right
+      playerSeat.innerHTML = &quot;Dufry O.&quot;;
+      playerSeat.style.transition = &#39;transform 0.3s ease&#39;;
+      playerSeat.style.transform = &#39;translate(0px, 0px)&#39;;
+      
+      // SUCCESS 3: Strip the glowing ID so it looks like a standard seat and disable dragging
+      playerSeat.removeAttribute(&#39;id&#39;);
+      playerSeat.style.pointerEvents = &#39;none&#39;;
+      
+      let container = document.querySelector(&#39;#hidden-swap-link&#39;);
+      let link = container.querySelector(&#39;tw-link&#39;);
+      if (container) container.style.display = &#39;block&#39;;
+      if (link) setTimeout(() =&gt; link.click(), 3000);
+      
+    } else {
+      playerSeat.style.transition = &#39;transform 0.3s ease&#39;;
+      playerSeat.style.transform = &#39;translate(0px, 0px)&#39;;
+    }
+  });
+&lt;/script&gt;
+}</tw-passagedata></tw-storydata>
 <script title="Twine engine code" data-main="harlowe">(function(){"use strict";
 var require,define;!function(){var e={},r={};require=function(i){var n=e[i];return n&&(r[i]=n[1].apply(void 0,n[0].map(require)),e[i]=void 0),r[i]},(define=function(r,i,n){if("function"==typeof r)return r();e[r]=[i,n]}).amd=!0}();/*!
  * https://github.com/paulmillr/es6-shim
