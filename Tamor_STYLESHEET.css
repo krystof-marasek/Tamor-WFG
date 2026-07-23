@@ -37,16 +37,16 @@
 	Google Fonts:
 	https://fonts.google.com/
 */
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Syne+Tactile&display=swap');
 
 tw-story {
-    background-image: url("https://assets.website-files.com/61c65ec6a561fd221a099b0e/61cb8f6acaa266900eac392f_stars.png");
-    background-position: 0 0;
-    background-size: 10%;
+  background-image: url("https://assets.website-files.com/61c65ec6a561fd221a099b0e/61cb8f6acaa266900eac392f_stars.png");
+  background-position: 0 0;
+  background-size: 10%;
 	color: #839496;
 	font-family: "Exo 2", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
+  font-optical-sizing: auto;
+  font-style: normal;
 	/* This makes the font size for normal letters just a little bit bigger than default */
 	font-size: 1.25em;
 }
@@ -81,20 +81,30 @@ tw-sidebar {
 }
 
 /*
-  BASIC LINK STYLES
-  
-  This covers various different kinds of links in Harlowe
+  GAME TITLE
+*/
+
+#game-title {
+  font-family: "Syne Tactile", system-ui;
+  font-weight: 400;
+  font-size: 50px;
+  color: ghostwhite;
+    
+  /* Center the title and keep it on one line for a clean horizontal wipe */
+  margin: 0 auto;
+  white-space: nowrap;
+  width: max-content; 
+    
+  /* A subtle glow to make it feel freshly etched or magical */
+  text-shadow: 0 0 8px rgba(248, 248, 255, 0.8);
+}
+
+/*
+  PASSAGE LINK STYLES
 */
 .enchantment-link, tw-link, a {
 	color: #cb4b16; 
 	font-weight: bold; 
-	/* Adds a glow to links.  You can make it a seperate color from the text 
-	   The numbers mean, in order: 
-	   - How far to the right of the letter (0 means radiating from the letter)
-	   - How far below the letter
-	   - How much blur does the glow/shadow have
-	   - What color is the shadow
-	*/
 	text-shadow: 0 0 5px #cb4b16;
 }
 /* Links that have already been visited */
@@ -110,6 +120,30 @@ tw-sidebar {
 	text-shadow: 0 0 5px #2aa198;
 }
 
+/*
+  ACTION LINK STYLES
+*/
+tw-story .action-link tw-link, 
+tw-story .action-link .enchantment-link {
+  color: #7C93F2; /* Muted pink */
+  font-weight: normal;
+  text-shadow: none;
+}
+
+tw-story .action-link tw-link:hover, 
+tw-story .action-link .enchantment-link:hover {
+  color: #B5C4FF; /* Hot pink to indicate it is clickable */
+  font-weight: normal;
+  text-shadow: none;
+}
+
+/* Prevents action links from turning blue once clicked */
+tw-story .action-link tw-link:visited, 
+tw-story .action-link .enchantment-link:visited {
+  color: #7C93F2; 
+  font-weight: normal;
+  text-shadow: none;
+}
 
 /*
 	EFFECTS
@@ -139,21 +173,14 @@ span.pulse-in {
 
 /* styles for all images by default */
 img {
-	/* for example */
-	/* border: 1px solid black; */
+  border-radius: 5px;
+  margin: 15px;
 }
-/* 
-   images with <img class="full-width"> will stretch 
-   to the full width of the story 
-*/
+
 img.full-width {
 	display:block; margin-right:auto; margin-left:auto; 
 	width: 100%;
 }
-
-
-
-
 
 /*
 	TABLET-SPECIFIC RULES / SMALL WIDTH BROWSERS
@@ -261,6 +288,105 @@ img.full-width {
     100% { opacity: 0.98; }
   }
 
+/*ORIGINAL SEATING PLAN - STATIC*/
+.seating-container-original {
+    display: grid;
+    grid-template-columns: repeat(6, 110px);
+    gap: 20px;
+    justify-content: center;
+    position: relative;
+    padding: 30px;
+    background-color: #000;
+    border: 2px solid #00cccc;
+    user-select: none;
+    
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    
+    animation: crtFlicker 0.15s infinite;
+  }
+
+  /* Base Seat */
+  .seating-container-original .seat {
+    width: 100px;
+    height: 100px;
+    background: transparent; 
+    border: 2px solid #00cccc; 
+    color: #00cccc;
+    border-radius: 2px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+  }
+
+  /* Table */
+  .seating-container-original .table-center {
+    grid-column: span 5;
+    background: repeating-linear-gradient(
+      0deg,
+      #000,
+      #000 2px,
+      rgba(0, 50, 50, 0.5) 2px,
+      rgba(0, 50, 50, 0.5) 4px
+    );
+    height: 70px;
+    border-radius: 0;
+    border: 2px solid #00ffff; 
+    align-self: center;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  /* Admiral's Seat */
+  #admiral-seat-original {
+    background-color: rgba(0, 204, 204, 0.2); 
+    border: 2px solid #ffffff; 
+    color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.3);
+    text-shadow: 0 0 5px #00ffff;
+  }
+
+  /* Jothro's Seat (Now with the flashing highlight) */
+  #player-seat-original {
+    background-color: rgba(0, 204, 204, 0.2); 
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    /* The pulse animation applied here */
+    animation: targetPulse 1.5s infinite; 
+  }
+
+  /* Spacers */
+  .seating-container-original .empty-space {
+    visibility: hidden; 
+  }
+
+  /* Animations */
+  @keyframes crtFlicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+  }
+
+  @keyframes targetPulse {
+    0% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+    50% { 
+      border: 2px solid #ffffff; 
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    100% { 
+      border: 2px solid #00cccc;
+      box-shadow: 0 0 5px rgba(0, 204, 204, 0.3);
+    }
+  }
+
 /*CHANGING SEATS MINIGAME*/
 .seating-container {
     display: grid;
@@ -362,7 +488,6 @@ img.full-width {
     padding-top: 15px;
     color: #00ff33; /* Glowing terminal green */
     text-shadow: 0 0 5px #00ff33;
-	font-weight: bold;
   }
 
   #hidden-swap-link tw-link {
