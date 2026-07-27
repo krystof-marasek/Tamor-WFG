@@ -48,7 +48,7 @@ tw-story {
   font-optical-sizing: auto;
   font-style: normal;
 	/* This makes the font size for normal letters just a little bit bigger than default */
-	font-size: 1.25em;
+	font-size: 1.5em;
 }
 
 /* These are the default options for the each passage area */
@@ -123,23 +123,29 @@ tw-sidebar {
 /*
   ACTION LINK STYLES
 */
-tw-story .action-link tw-link, 
-tw-story .action-link .enchantment-link {
-  color: #7C93F2; /* Muted pink */
+tw-story tw-link .action-link, 
+tw-story .enchantment-link .action-link {
+  color: #7C93F2; 
+  font-weight: normal;
+  text-shadow: none;
+  
+  /* Adding this ensures the standard link underline/glow doesn't bleed through */
+  display: inline-block; 
+}
+
+/* Hover state for action links */
+tw-story tw-link:hover .action-link, 
+tw-story .enchantment-link:hover .action-link {
+  color: #B5C4FF; 
   font-weight: normal;
   text-shadow: none;
 }
 
-tw-story .action-link tw-link:hover, 
-tw-story .action-link .enchantment-link:hover {
-  color: #B5C4FF; /* Hot pink to indicate it is clickable */
-  font-weight: normal;
-  text-shadow: none;
-}
-
-/* Prevents action links from turning blue once clicked */
-tw-story .action-link tw-link:visited, 
-tw-story .action-link .enchantment-link:visited {
+/* Visited state for action links */
+tw-story tw-link:visited .action-link, 
+tw-story .enchantment-link:visited .action-link,
+tw-story tw-link.visited .action-link, 
+tw-story .enchantment-link.visited .action-link {
   color: #7C93F2; 
   font-weight: normal;
   text-shadow: none;
