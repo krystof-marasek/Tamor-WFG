@@ -492,6 +492,7 @@ img.full-width {
     display: none; /* Hidden until JS triggers it */
     grid-column: 1 / -1; /* Forces it to span completely across all 6 columns */
     padding-top: 15px;
+    border-top: 1px dashed rgba(0, 204, 204, 0.5);
     color: #00ff33; /* Glowing terminal green */
     text-shadow: 0 0 5px #00ff33;
   }
@@ -579,3 +580,158 @@ img.full-width {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
   }
+
+/* WARNING BOX FUNCTION */
+.terminal-warning-box {
+  background-color: #000;
+  border: 2px solid #ff3333;
+  border-radius: 2px;
+  padding: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  text-transform: uppercase;
+  /* Changed to 1s for a more urgent alarm speed */
+  animation: crtFlicker 0.15s infinite, warningPulse 1s infinite;
+  user-select: none;
+  line-height: 1.5;
+}
+
+.warning-text {
+  color: #ff3333;
+  font-weight: bold;
+  text-shadow: 0 0 5px #ff3333;
+}
+
+/* Red flashing animation - Snaps instantly between states */
+@keyframes warningPulse {
+  0%, 49% {
+    box-shadow: inset 0 0 5px rgba(255, 51, 51, 0.2), 0 0 2px rgba(255, 51, 51, 0.2);
+    border-color: #aa0000;
+  }
+  50%, 99% {
+    box-shadow: inset 0 0 25px rgba(255, 51, 51, 0.8), 0 0 15px rgba(255, 51, 51, 0.6);
+    border-color: #ff3333;
+    /* Added a faint red background tint during the bright flash for extra impact */
+    background-color: rgba(255, 51, 51, 0.1); 
+  }
+  100% {
+    box-shadow: inset 0 0 5px rgba(255, 51, 51, 0.2), 0 0 2px rgba(255, 51, 51, 0.2);
+    border-color: #aa0000;
+    background-color: #000;
+  }
+}
+
+/* CAMERA HACKING MINIGAME */
+.chamber-container {
+  background-color: #000;
+  border: 2px solid #00cccc;
+  padding: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  user-select: none;
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+.minigame-area {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+/* Accurate Grid Seating Plan */
+.mini-seating-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 45px);
+  gap: 12px;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  z-index: 0;
+}
+
+.mini-seat-box {
+  width: 45px;
+  height: 45px;
+  border: 2px solid #00cccc;
+  border-radius: 2px;
+  box-shadow: inset 0 0 5px rgba(0, 204, 204, 0.3);
+  background: transparent;
+}
+
+.mini-admiral-box {
+  background-color: rgba(0, 204, 204, 0.2);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+.mini-table-box {
+  grid-column: span 5;
+  height: 30px;
+  border: 2px solid #00ffff;
+  background: repeating-linear-gradient(0deg, #000, #000 2px, rgba(0, 50, 50, 0.5) 2px, rgba(0, 50, 50, 0.5) 4px);
+  align-self: center;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Cameras & Interactive Nodes */
+.camera-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-color: #000;
+  border: 2px solid #00cccc;
+  color: #00cccc;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.camera-node.hacked {
+  border-color: #00ff33;
+  color: #00ff33;
+  background-color: rgba(0, 255, 51, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 51, 0.3);
+}
+
+/* The Freeform V-Slider (Jothro Seat Styling) */
+.drag-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 6px 10px;
+  font-weight: bold;
+  z-index: 10;
+  cursor: grab;
+  
+  /* Original Jothro Seat Colors & Glows */
+  background-color: rgba(0, 204, 204, 0.2); 
+  border: 2px solid #00ffff; 
+  color: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), inset 0 0 5px rgba(0, 255, 255, 0.3);
+  text-shadow: 0 0 5px #00ffff;
+}
+
+.drag-node:active {
+  cursor: grabbing;
+  /* Brighter blue when held, just like the seating plan */
+  background-color: rgba(0, 204, 204, 0.5); 
+}
+
+/* Internal Success Log */
+.internal-log {
+  display: none;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed rgba(0, 204, 204, 0.5);
+  color: #00ff33;
+  text-shadow: 0 0 5px #00ff33;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.internal-log tw-link {
+  color: #00ffff !important;
+}
