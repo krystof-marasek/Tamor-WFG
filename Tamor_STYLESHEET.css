@@ -735,3 +735,47 @@ img.full-width {
 .internal-log tw-link {
   color: #00ffff !important;
 }
+
+/* EXTREMELY BLURRY TYPEWRITER TEXT */
+.blurry-text-container {
+  color: #839496;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  
+  /* Extreme blur makes the text unreadable while keeping word blocks visible */
+  filter: blur(6.5px); 
+  
+  user-select: none;
+  pointer-events: none;
+  white-space: pre-wrap;
+}
+
+/* FAKE SHIVER LINK STYLING */
+.shiver-fake-link {
+  color: #555555;
+  text-shadow: 0 0 5px #cb4b16;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+/* Hover state */
+.shiver-fake-link:hover {
+  color: #777777; 
+}
+
+/* Shiver animation triggers while the mouse is pressed down */
+.shiver-fake-link:active {
+  animation: shiverEffect 0.1s infinite;
+}
+
+/* The rapid shaking animation */
+@keyframes shiverEffect {
+  0% { transform: translate(1px, 1px); }
+  25% { transform: translate(-2px, -1px); }
+  50% { transform: translate(1px, -2px); }
+  75% { transform: translate(-1px, 2px); }
+  100% { transform: translate(1px, 1px); }
+}
