@@ -80,6 +80,10 @@ tw-sidebar {
 	/* display: none; */ 
 }
 
+tw-story i, tw-story em {
+  color: #5c696b; /* Dimmer version of the main #839496 text */
+}
+
 /*
   GAME TITLE
 */
@@ -131,6 +135,11 @@ tw-story .enchantment-link .action-link {
   
   /* Adding this ensures the standard link underline/glow doesn't bleed through */
   display: inline-block; 
+}
+
+.action-link i, 
+.action-link em {
+  color: inherit; 
 }
 
 /* Hover state for action links */
