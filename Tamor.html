@@ -48,7 +48,7 @@
 	Google Fonts:
 	https://fonts.google.com/
 */
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Syne+Tactile&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Sekuya&display=swap');
 
 tw-story {
   background-image: url("https://assets.website-files.com/61c65ec6a561fd221a099b0e/61cb8f6acaa266900eac392f_stars.png");
@@ -96,22 +96,79 @@ tw-story i, tw-story em {
 }
 
 /*
-  GAME TITLE
+  GAME TITLE SCREEN
 */
 
+/* MASTER TITLE SCREEN CONTAINER */
+.title-screen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 85vh; /* Pushes the content to the vertical center of the viewport */
+  text-align: center;
+  animation: fadeIn 2s ease-in; /* A slow, cinematic fade-in when the game boots */
+}
+
+/* MAIN TITLE ADJUSTMENTS */
 #game-title {
-  font-family: "Syne Tactile", system-ui;
+  font-family: "Sekuya", system-ui;
   font-weight: 400;
-  font-size: 50px;
+  font-size: 65px; /* Bumped up the size for a true hero title */
   color: ghostwhite;
-    
-  /* Center the title and keep it on one line for a clean horizontal wipe */
   margin: 0 auto;
   white-space: nowrap;
   width: max-content; 
-    
-  /* A subtle glow to make it feel freshly etched or magical */
-  text-shadow: 0 0 8px rgba(248, 248, 255, 0.8);
+  text-shadow: 0 0 12px rgba(248, 248, 255, 0.6);
+  letter-spacing: 2px;
+}
+
+/* SUBTITLE STYLING */
+.game-subtitle {
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.2em;
+  color: #00cccc; /* Tactical cyan */
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-top: -10px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 5px rgba(0, 204, 204, 0.5);
+}
+
+/* COVER IMAGE STYLING */
+.title-cover-image {
+  max-width: 1200px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #5c696b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(131, 148, 150, 0.2);
+  margin-bottom: 40px;
+}
+
+/* START BUTTON STYLING */
+.start-button-wrapper tw-link {
+  display: inline-block;
+  padding: 12px 30px;
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #00ffff !important;
+  background-color: rgba(0, 204, 204, 0.1);
+  border: 2px solid #00ffff;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2), inset 0 0 5px rgba(0, 255, 255, 0.1);
+}
+
+/* Start Button Hover Effect */
+.start-button-wrapper tw-link:hover {
+  background-color: rgba(0, 204, 204, 0.3);
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 /*
@@ -1501,13 +1558,13 @@ Jothro: “Alright, how about… When the dinner starts, wait for some time to p
 
 Mave takes a couple of seconds to think but then he hesitantly nods.
 
-Mav: “Okay, I’ll do it. I don’t know what in the voids you are trying to pull off, but you owe me more than an explanation tomorrow. It was expensive to build this EMP.
+Mav: “Okay, I’ll do it. I don’t know what in the voids you are trying to pull off, but you owe me more than an explanation tomorrow. It was expensive to build this EMP.&quot;
 
 Jothro: “Definitely, I’ll make it worth your time. Just make sure no one sees you. I don’t want you getting into trouble.”
 
 [[Continue|Get rid of guards DONE]]]
 (set: $distractionPrepared to true)</tw-passagedata><tw-passagedata pid="27" name="Get rid of guards DONE" tags="" position="2925,1100" size="100,100">(if: $camerasHacked is false and $seatingChanged is false)\
-[Mav squeezes Jothro’s shoulder and goes back to Vanda and Luen. Jothro looks over to the digital clock and freezes.
+[Mav squeezes Jothro’s shoulder while heading back to Vanda and Luen. Jothro looks over to the digital clock and freezes.
 
 *Shit… Fifteen minutes left. The match took longer than I expected.*
 
@@ -1656,7 +1713,7 @@ They both share a laugh.
 [[Continue|The Admiral arrives]]]</tw-passagedata><tw-passagedata pid="31" name="First course" tags="" position="3500,1725" size="100,100">As the first course is being served, Jothro’s mind clouds and all conversations around become inaudible as if he is |option1&gt;[&lt;span class=&quot;action-link&quot;&gt;underwater&lt;/span&gt;].
 
 (click:?option1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
-[(display: &quot;Dinner background convo&quot;)]</tw-passagedata><tw-passagedata pid="32" name="Second course" tags="" position="4175,1725" size="100,100">As the second course is started to be served, Jothro notices Luen looking at him with concern. When they lock their eyes, she questions him with her sight. Jothro just smiles back and becomes more present. This helps to clear him mind a bit but it also brings forth new dire thoughts.
+[(display: &quot;Dinner background convo&quot;)]</tw-passagedata><tw-passagedata pid="32" name="Second course" tags="" position="4175,1725" size="100,100">As the second course is started to be served, Jothro notices Luen looking at him with concern. When they lock their eyes, she questions him with her sight. Jothro just smiles back and becomes more present. This helps to clear his mind a bit but it also brings forth new dire thoughts.
 
 *I’ll probably never see her after today. I won’t have the option to explain my actions. She’ll probably see me as a criminal, a liar. Voids, and what about Mav and Vanda? They helped me forget and truly move on from what happened on Tamor, even though I never told them about it. I’ll have to find a way to…*
 
@@ -1837,13 +1894,24 @@ Jothro simply nods, but Luen snickers while drinking her wine. The echo from the
 Admiral: “Do you have anything to add?”
 
 Luen: “I…”]
-(else-if: $dinnerDialogue is &quot;careful&quot; or &quot;passive&quot;)
+(else-if: $dinnerDialogue is &quot;careful&quot;)
 [
 *I shouldn&#39;t push my luck. Hopefully Mav’s distraction will trigger soon.*
 
 Admiral: “Our race, our culture are at stake here. If we allow interbreeding with aliens, what will remain of us in thousands of years? This is what I’m trying to teach you here.”
 
 Jothro simply nods, but Luen snickers while drinking her wine. The echo from the goblet made it louder than she had expected.
+
+Admiral: “Do you have anything to add?”
+
+Luen: “I…”]
+(else-if: $dinnerDialogue is &quot;passive&quot;)
+[
+*I shouldn&#39;t push my luck. Hopefully Mav’s distraction will trigger soon.*
+
+Admiral: “Our race, our culture are at stake here. If we allow interbreeding with aliens, what will remain of us in thousands of years? This is what I’m trying to teach you here.”
+
+Luen snickers while drinking her wine. The echo from the goblet made it louder than she had expected.
 
 Admiral: “Do you have anything to add?”
 
@@ -1869,7 +1937,7 @@ The two technopaths reluctantly join the Academis and head out of the dinner cha
 
 Admiral: “Don’t think that we’re done here. You’re coming with me after the dinner.”
 
-The Admiral snaps her fingers and points to the table, prompting the staff to clean up and start serving the third course.
+The Admiral snaps her fingers and points to the table, prompting the staff to clean up.
 
 Jothro [[cleans his face|The Admiral reveals Luen]] from the food.]
 (else-if: $dinnerDialogue is &quot;careful&quot;)\
@@ -1891,7 +1959,7 @@ The two technopaths reluctantly join the Academis and head out of the dinner cha
 
 Admiral: “It seems that destiny has intervened and given you a chance to reflect on what we just talked about, Prime Graduate.”
 
-The Admiral snaps her fingers and points to the table, prompting the staff to clean up and start serving the third course.
+The Admiral snaps her fingers and points to the table, prompting the staff to clean up.
 
 Jothro [[shifts in his seat|The Admiral reveals Luen]] as he forces his nervousness down.]
 (else-if: $dinnerDialogue is &quot;passive&quot;)\
@@ -1911,7 +1979,7 @@ Admiral: “Go! You’re more needed out there. I’ll be fine.”
 
 The two technopaths reluctantly join the Academis and head out of the dinner chamber. The Admiral looks back to Luen as she proceeds to sit back down and just shakes her head.
 
-The Admiral snaps her fingers and points to the table, prompting the staff to clean up and start serving the third course.
+The Admiral snaps her fingers and points to the table, prompting the staff to clean up.
 
 Jothro [[shifts in his seat|The Admiral reveals Luen]] as he forces his nervousness down.]
 (else:)\
@@ -2029,10 +2097,18 @@ Luen: “Sure, I understand. Let’s talk tomorrow.”
 
 Jothro nods and leaves the observation deck. Jothro looks after Luen trying to say something, but he cannot find the words. Eventually, Luen is alone and the only thing that can be heard is the hum of the observation deck as it spins around on its axis.
 
-&#39;&#39;THE END&#39;&#39;</tw-passagedata><tw-passagedata pid="49" name="Title" tags="" position="50,50" size="100,100">&lt;div id=&quot;game-title&quot;&gt;The Dissolution of Tamor&lt;/div&gt;
-&lt;img src=&quot;https://krystof-marasek.github.io/Tamor-WFG/img/title-cover.png&quot;&gt;
+&#39;&#39;THE END&#39;&#39;</tw-passagedata><tw-passagedata pid="49" name="Title" tags="" position="50,50" size="100,100">&lt;div class=&quot;title-screen-container&quot;&gt;
+  &lt;div id=&quot;game-title&quot;&gt;The Dissolution of Tamor&lt;/div&gt;
+  
+  &lt;!-- Optional: A tactical subtitle to establish the setting --&gt;
+  &lt;div class=&quot;game-subtitle&quot;&gt;Terran Academy Graduation Gala&lt;/div&gt;
+  
+  &lt;img class=&quot;title-cover-image&quot; src=&quot;https://krystof-marasek.github.io/Tamor-WFG/img/title-cover.jpg&quot;&gt;
 
-[[Start|In Front of Grand Hall]] </tw-passagedata><tw-passagedata pid="50" name="Look around" tags="" position="775,200" size="100,100">[|CH1&gt;[|option1&gt;[&lt;span class=&quot;action-link&quot;&gt;Bar&lt;/span&gt;]]]
+  &lt;div class=&quot;start-button-wrapper&quot;&gt;
+    [[START GAME|In Front of Grand Hall]]
+  &lt;/div&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="50" name="Look around" tags="" position="775,200" size="100,100">[|CH1&gt;[|option1&gt;[&lt;span class=&quot;action-link&quot;&gt;Bar&lt;/span&gt;]]]
 (click:?option1)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
 [The bar is open and booming with excited graduates. The drinks they hold in their hands look amazing and premium. Jothro has heard that the $academyShort is not afraid to spend and invites some of the best bartenders in the Dukedom for every graduation.
 [[Bar]]]
@@ -2727,7 +2803,7 @@ The technopath returns a cold death stare but eventually walks away while showin
 |C&gt;[&lt;span class=&quot;action-link&quot;&gt;&quot;By the voids.&quot;&lt;/span&gt;]\
 ]
 	(click:?A)+(replace:?CH3)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
-[Jothro: “Thanks, I appreciate the help. That *thing* was relentless.”
+[Jothro: “Thanks, I appreciate the help. That thing was relentless.”
 
 The Academis: “I know; they are here to protect the Admiral, but they have been pestering the guests for the whole night. This is the third one I had to fend off.”
 
@@ -2747,7 +2823,7 @@ The Academis: “I have to get back to my obligations. Don’t forget to join th
 
 [[Continue|After upload]]]
 	(click:?C)+(replace:?CH3)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
-[Jothro: “By the voids… that *thing* was relentless.”
+[Jothro: “By the voids… that thing was relentless.”
 
 The Academis: “I know; they are here to protect the Admiral, but they have been pestering the guests for the whole night. This is the third one I had to fend off.”
 
@@ -3161,7 +3237,7 @@ Admiral Kastel: &quot;It’s quiet work compared to active fleet command, but vi
 Never setting sun. Dry sand. Eternal thirst.
 Several memories unlock in Jothro’s subconsciousness. Memories that he has long worked to bury; feelings that he has suppressed. The week he has spent walking through Tamor’s desert with his family with no rest, no food, barely any clothes and water.
 
-The Terran military marched them, and millions of others, to purify them. Jothro was one of the lucky children that were considered pure enough since he came out of his father’s previous purely Terran marriage. So, he got separated from the rest of his family; a family that his father started with a Tamoran wife when they moved there. The last thing he can remember is leaving Tamor in a spaceship full of Terran children like him and seeing his family, including his little half-Tamoran sister, being ushered to continue their march through the desert with no end in sight.
+The Terran military marched them, and millions of others, to purify them. Jothro was one of the lucky children that were considered pure enough since he came out of his father’s previous purely Terran marriage. So, he got separated from the rest of his family; a family that his father started with a Tamoran wife when he and Jothro moved there. The last thing he can remember is leaving Tamor in a spaceship full of Terran children like him and seeing his family, including his little half-Tamoran sister, being ushered to continue their march through the desert with no end in sight.
 
 [[Continue|Second course]]</tw-passagedata><tw-passagedata pid="95" name="Reaction to challenging Admiral" tags="" position="4500,1625" size="100,100">One of the technopaths steps forward and reaches for its weapon. The Admiral drops her fork abruptly and raises her hand. The technopath stops and reluctantly returns to its post.
 
@@ -3223,7 +3299,7 @@ Admiral: “It never is, Prime Graduate. Remember what I said earlier? Sturdy ju
 [[[&quot;Tell that to the dead.&quot;|Fully provoke her]]
 [[&quot;What if we&#39;re wrong?&quot;|Object her views]]
 [[Jothro swallows his pride|Swallow your pride]]]
-(set: $dinnerDialogue to &quot;careful&quot;)</tw-passagedata><tw-passagedata pid="97" name="Kill the Admiral" tags="" position="5525,1750" size="100,100">*It has to be done.*
+(set: $dinnerDialogue to &quot;careful&quot;)</tw-passagedata><tw-passagedata pid="97" name="Kill the Admiral" tags="" position="5525,1750" size="100,100">*It has to be done.* Jothro moves a steak knife closer to him.
 
 (if: $seatingChanged is true)\
 [Jothro checks the cameras and looks for possible escape routes
@@ -3237,7 +3313,7 @@ Jothro looks back to the Admiral. She sits in silence, engulfed in thought.
 |CH1&gt;[\
 |A&gt;[&lt;span class=&quot;action-link&quot;&gt;&quot;Have you ever been on Tamor?&quot;&lt;/span&gt;]
 |B&gt;[&lt;span class=&quot;action-link&quot;&gt;&quot;Do you know what starvation feels like?&quot;&lt;/span&gt;]
-[[Grab a steak knife|Go for the kill]]\
+[[Grab the steak knife|Go for the kill]]\
 ]
 	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
 [Jothro: “Have you ever even stepped on Tamor?”
@@ -3256,7 +3332,7 @@ The Admiral’s annoyance turns into terror.
 
 Admiral: “How do you…? Are you from Tamor?”
 
-[[Grab a steak knife|Go for the kill]]]
+[[Grab the steak knife|Go for the kill]]]
 	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
 [Jothro: “Do you know what true starvation feels like, Admiral?”
 
@@ -3274,7 +3350,7 @@ The Admiral’s annoyance turns into terror.
 
 Admiral: “How do you…? Are you from Tamor?”
 
-[[Grab a steak knife|Go for the kill]]]
+[[Grab the steak knife|Go for the kill]]]
 ]
 (else-if: $camerasHacked is true)\
 [Jothro checks the cameras and looks for possible escape routes
@@ -3305,7 +3381,7 @@ Jothro: “Did you ever think about what your ‘dissolutions’ do to children 
 
 The Admiral scoffs and moves towards Jothro.
 
-Admiral: “And have you now common sense? Who do you think you’re talking with, boy?!”
+Admiral: “And have you no common sense? Who do you think you’re talking with, boy?!”
 
 Jothro: “You know, I still can’t touch sand without flinching and feeling like my whole body is burning.”
 
@@ -3313,7 +3389,7 @@ The Admiral’s annoyance turns into terror.
 
 Admiral: “How do you…? Are you from Tamor?”
 
-[[Grab a steak knife|Go for the kill]]]
+[[Grab the steak knife|Go for the kill]]]
 	(click:?D)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
 [Jothro: “Do you know what true starvation feels like, Admiral?”
 
@@ -3329,7 +3405,7 @@ Jothro: “Based on how much you’ve eaten tonight, I don’t think you know wh
 
 The Admiral scoffs and moves towards Jothro.
 
-Admiral: “Have you now common sense? Who do you think you’re talking with, boy?!”
+Admiral: “Have you no common sense? Who do you think you’re talking with, boy?!”
 
 Jothro: “You know, I still can’t touch sand without flinching and feeling like my whole body is burning.”
 
@@ -3337,7 +3413,7 @@ The Admiral’s annoyance turns into terror.
 
 Admiral: “How do you…? Are you from Tamor?”
 
-[[Grab a steak knife|Go for the kill]]]
+[[Grab the steak knife|Go for the kill]]]
 	(click:?E)+(replace:?CH2)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
 [Jothro: &quot;Did you order the march through the desert?”
 
@@ -3353,7 +3429,7 @@ Jothro: “Are you truly so heartless to not know what I’m talking about?”
 
 The Admiral scoffs and moves towards Jothro.
 
-Admiral: “And have you now common sense? Who do you think you’re talking with, boy?!”
+Admiral: “And have you no common sense? Who do you think you’re talking with, boy?!”
 
 Jothro: “You know, I still can’t touch sand without flinching and feeling like my whole body is burning.”
 
@@ -3361,7 +3437,7 @@ The Admiral’s annoyance turns into terror.
 
 Admiral: “How do you…? Are you from Tamor?”
 
-[[Grab a steak knife|Go for the kill]]]
+[[Grab the steak knife|Go for the kill]]]
 ]</tw-passagedata><tw-passagedata pid="98" name="Spare the Admiral" tags="" position="5525,1900" size="100,100">Jothro lets go of the steak knife he has been fidgeting around. Something inside of him still bites at his consciousness, but the need for answers prevails.
 
 As the desserts are being served, the main lights turn back on and the technopaths return. The rest of the dinner proceeds calmly and quietly. The Admiral barely interacts with the rest and instead picks at her dessert. At the end, the Academis returns and ends the dinner, prompting everyone to return to the main hall. The Admiral, without a single word, gets up and leaves the dinner chamber before anyone else.
@@ -3548,13 +3624,9 @@ Jothro [[sprints for the main exit|Spaceship]] out of the Grand Hall.]
 
 Jothro uses that to his advantage and runs past him into the main hall. Through the crowd, he can see more guards and technopaths coming towards him.
 
-Jothro [[sprints for the main exit|Spaceship]] out of the Grand Hall.]</tw-passagedata><tw-passagedata pid="105" name="Difficult escape" tags="" position="5850,1575" size="100,100">Technopaths and guards burst through the main doors - Jothro will have to use the staff backdoor to exacpe
+Jothro [[sprints for the main exit|Spaceship]] out of the Grand Hall.]</tw-passagedata><tw-passagedata pid="105" name="Difficult escape" tags="" position="5850,1575" size="100,100">Jothro leaves the knife in the Admiral&#39;s throat and runs for the staff entrance. Couple of academy guards burst through the main doors and Jothro can see the two technopaths hastily running through the main hall towards the dinner chamber. One of the kitchen staff opens the staff entrance just before Jothro reaches it.
 
-A bit of a longer escape sequence will play out - the player will be able to choose what to do during the escape to give a bit of variety
-
-His uncle is waiting in one of the spaceships; they promptly leave, the uncle will remind him that he has done a good thing that will help the whole galaxy - on top of avenging his family
-
-Jothro will spot Luen sitting in the observation deck as they circle around it before leaving the system</tw-passagedata><tw-passagedata pid="106" name="Go for the kill" tags="" position="5700,1500" size="100,100">Jothro grabs his steak knife and plunges it into the Admiral&#39;s throat. Blood comes spurting out of the wound and fear flows out of her eyes. Jothro holds the knife while his whole body feels like it is paralyzed. The Admiral slowly falls to the ground as one last breath escapes her lungs.
+[[Jothro runs past|Kitchen escape]]</tw-passagedata><tw-passagedata pid="106" name="Go for the kill" tags="" position="5700,1500" size="100,100">Jothro grabs his steak knife and plunges it into the Admiral&#39;s throat. Blood comes spurting out of the wound and fear flows out of her eyes. Jothro holds the knife while his whole body feels like it is paralyzed. The Admiral slowly falls to the ground as one last breath escapes her lungs.
 
 Everybody in the room is still as a statue. Suddenly, the main lights turn back on. Shock and fear controls everyone for couple of seconds until one of the Prime Graduates pierces the silence.
 
@@ -3562,9 +3634,9 @@ Dufry: “What have you done? Guards!”
 
 Jothro’s mind snaps back into reality. *That’s my cue.*
 (if: $seatingChanged is true)
-[[[Run|Easy escape]]]
+[[[Run|Difficult escape]]]
 (else-if: $camerasHacked is true)
-[[[Run|Easy escape]]]</tw-passagedata><tw-passagedata pid="107" name="Spaceship" tags="" position="6000,1500" size="100,100">As he practiced hundreds of times, Jothro heads for the landing pad that lies nearby. In one of the spaceships there waits an undercover Anarchs robot, waiting to help Jothro escape.
+[[[Run|Easy escape]]]</tw-passagedata><tw-passagedata pid="107" name="Spaceship" tags="" position="6175,1500" size="100,100">As he practiced hundreds of times, Jothro heads for the landing pad that lies nearby. In one of the spaceships there waits an undercover Anarchs robot, waiting to help Jothro escape.
 
 Jothro heads inside and hails at the robot.
 
@@ -3574,7 +3646,7 @@ The robot that sits in the cockpit turns its head 180 degrees in response.
 
 Robot: “Certainly.”
 
-The spaceship starts taking off and Jothro [[reaches for the communications terminal|Calling uncle]].</tw-passagedata><tw-passagedata pid="108" name="Calling uncle" tags="" position="6150,1500" size="100,100">Jothro dials for his uncle, one of the leaders of Anarchs.
+The spaceship starts taking off and Jothro [[reaches for the communications terminal|Calling uncle]].</tw-passagedata><tw-passagedata pid="108" name="Calling uncle" tags="" position="6325,1500" size="100,100">Jothro dials for his uncle, one of the leaders of Anarchs.
 
 Uncle: “Jothro? Finally, I was getting worried, son!
 
@@ -3584,7 +3656,7 @@ Uncle: “Good gods, that’s a relief.”
 
 Jothro mind finally stops racing but leaves him hollow and speechless. His uncle notices the blank expression as Jothro watches something through the spaceship’s window.
 
-Uncle: “Listen, I know what you had to do was not easy, but you’ve just done something that we have been trying to accomplish for years now – a blow to the Dukedom powerful enough that will allow us to recruit more planets to our cause. I’m not saying that we will see the fruits of our labor, but at least we’ve planted the seeds.”
+Uncle: “Listen, I know what you had to do was not easy, but you’ve just done something that we have been trying to accomplish for years now – a blow to the Dukedom powerful enough that will allow us to recruit more planets to our cause. I cannot promise you that we will see the fruits of our labor, but at least we’ve planted the seeds.”
 
 Jothro absently nods, still watching something outside.
 
@@ -3600,13 +3672,51 @@ Jothro: “Thank you, that means a lot.”
 
 Uncle: “We’ll talk more once you return. Get back safe.”
 
-[[Look back outside]]</tw-passagedata><tw-passagedata pid="109" name="Look back outside" tags="" position="6300,1500" size="100,100">Jothro looks back outside. Couple of battleships are starting to mobilize, but they’ll be long gone before the ships will be able to do anything. Jothro’s gaze goes back to what he’s been following during his call with his uncle.
+[[Look back outside]]</tw-passagedata><tw-passagedata pid="109" name="Look back outside" tags="" position="6475,1500" size="100,100">Jothro looks back outside. Couple of battleships are starting to mobilize, but their nimble spaceship be long gone before the battleships will be able to do anything. Jothro’s gaze goes back to what he has been following during his call with his uncle.
 
 The robot is circling the observation deck in preparation to make the jump out of this system. Jothro sees a person sitting at the edge of the observation deck. The dome above the deck makes it difficult to properly see inside, but Jothro is pretty sure he can see Luen.
 
-Jothro hangs his head low and looks at his trembling, bloodied hands. The spaceship levels out and the robot pilot engages the coredrive, leaving the Academy, Jothro’s history, and his friends behind.
+Jothro hangs his head low and looks at his trembling, bloodied hands. The spaceship levels out and the robot pilot engages the coredrive, leaving the Academy, Jothro’s history, and his friends.
 
-THE END</tw-passagedata></tw-storydata>
+&#39;&#39;THE END&#39;&#39;</tw-passagedata><tw-passagedata pid="110" name="Kitchen escape" tags="" position="6000,1575" size="100,100">Jothro pushes the kitchen servant to the side, causing her to drop the tray of desserts she was bringing in. Jothro runs down a long set of stairs until he reaches the main kitchen. Everyone inside is busy working, so no one notices him at first, but then a technopath slams through the door at the other end. A door Jothro needs to go through to get to the back exit out of the Grand Hall.
+
+Technopath: “STOP HIM!”
+
+The technopath’s half-synthetic voice spreads through the kitchen, causing everyone to jump, but no one dares to even come close to Jothro on account of his bloodied look. The technopath does not spare even a single second and starts making his way through the kitchen, shoving everything and everyone out of its way. Jothro looks around in panic. The only thing useful he can see is a plasma extinguisher and pan full of sizzling oil.
+
+|CH1&gt;[\
+|A&gt;[&lt;span class=&quot;action-link&quot;&gt;Reach for the extinguisher&lt;/span&gt;]
+|B&gt;[&lt;span class=&quot;action-link&quot;&gt;Move towards the pan&lt;/span&gt;]\
+]
+
+	(click:?A)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
+[Jothro grabs the plasma extinguisher and unlocks it. The technopath is half-way through the kitchen when it notices what Jothro is doing, prompting it to speed up. Jothro does not hesitate and unloads the tank towards the technopath. The plasma extinguisher releases the foam inside rapidly, covering everything in front of Jothro and immediately starts spreading thick, steamy gas throughout the whole kitchen.
+
+This makes visibility inside considerably lower on top of causing the servants to panic. The technopath removes foam from its face and bellows.
+ 
+Technopath: “You’re dead, you hear me! I should have snapped your neck the moment I saw you using that datapad.”
+
+It grabs a metal trolley in front of it and chucks it towards where the technopath last saw Jothro. The trolley embeds itself in the wall behind Jothro who barely dodged out of the way.
+
+Jothro squats and [[sneaks past|Spaceship]] towards the back doors.]
+	(click:?B)+(replace:?CH1)+(t8n: &quot;fade&quot;)+(transition-time: 1s)\
+[Jothro slowly moves towards the pan, faking confusion in the process.
+
+Jothro: “Listen, I don’t know what’s going on but…”
+
+Technopath: “Shut up! I saw everything on the camera feed.”
+
+It grabs a metal trolley in front of it and chucks it towards Jothro who barely manages to dodge out of its way. The trolley embeds itself in the wall behind him.
+
+Technopath: “I knew I should have snapped your neck the moment I saw you using that datapad. It has a slicer inside it, doesn’t it?”
+
+The technopath points at the datapad hanging from Jothro’s belt.
+
+Jothro: “It does. And the best kind of encryption money can buy.”
+
+The technopath growls and almost jumps at him. Jothro uses the opportunity and reaches for the pan. Jothro throws the whole pan and its contents at the technopath. The scorching hot oil covers its face causing the technopath to drop to the ground while screaming in agony. The servants standing around start panicking.
+
+Jothro [[shoves his way through|Spaceship]] the kitchen staff towards the back doors.]</tw-passagedata></tw-storydata>
 <script title="Twine engine code" data-main="harlowe">(function(){"use strict";
 var require,define;!function(){var e={},r={};require=function(i){var n=e[i];return n&&(r[i]=n[1].apply(void 0,n[0].map(require)),e[i]=void 0),r[i]},(define=function(r,i,n){if("function"==typeof r)return r();e[r]=[i,n]}).amd=!0}();/*!
  * https://github.com/paulmillr/es6-shim

@@ -37,7 +37,7 @@
 	Google Fonts:
 	https://fonts.google.com/
 */
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Syne+Tactile&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Sekuya&display=swap');
 
 tw-story {
   background-image: url("https://assets.website-files.com/61c65ec6a561fd221a099b0e/61cb8f6acaa266900eac392f_stars.png");
@@ -85,22 +85,79 @@ tw-story i, tw-story em {
 }
 
 /*
-  GAME TITLE
+  GAME TITLE SCREEN
 */
 
+/* MASTER TITLE SCREEN CONTAINER */
+.title-screen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 85vh; /* Pushes the content to the vertical center of the viewport */
+  text-align: center;
+  animation: fadeIn 2s ease-in; /* A slow, cinematic fade-in when the game boots */
+}
+
+/* MAIN TITLE ADJUSTMENTS */
 #game-title {
-  font-family: "Syne Tactile", system-ui;
+  font-family: "Sekuya", system-ui;
   font-weight: 400;
-  font-size: 50px;
+  font-size: 65px; /* Bumped up the size for a true hero title */
   color: ghostwhite;
-    
-  /* Center the title and keep it on one line for a clean horizontal wipe */
   margin: 0 auto;
   white-space: nowrap;
   width: max-content; 
-    
-  /* A subtle glow to make it feel freshly etched or magical */
-  text-shadow: 0 0 8px rgba(248, 248, 255, 0.8);
+  text-shadow: 0 0 12px rgba(248, 248, 255, 0.6);
+  letter-spacing: 2px;
+}
+
+/* SUBTITLE STYLING */
+.game-subtitle {
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.2em;
+  color: #00cccc; /* Tactical cyan */
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-top: -10px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 5px rgba(0, 204, 204, 0.5);
+}
+
+/* COVER IMAGE STYLING */
+.title-cover-image {
+  max-width: 1200px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #5c696b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(131, 148, 150, 0.2);
+  margin-bottom: 40px;
+}
+
+/* START BUTTON STYLING */
+.start-button-wrapper tw-link {
+  display: inline-block;
+  padding: 12px 30px;
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #00ffff !important;
+  background-color: rgba(0, 204, 204, 0.1);
+  border: 2px solid #00ffff;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2), inset 0 0 5px rgba(0, 255, 255, 0.1);
+}
+
+/* Start Button Hover Effect */
+.start-button-wrapper tw-link:hover {
+  background-color: rgba(0, 204, 204, 0.3);
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 /*
